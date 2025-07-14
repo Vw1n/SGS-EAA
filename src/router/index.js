@@ -1,5 +1,5 @@
 // router/index.js
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Login from "../components/Login.vue"
 import Main from "../components/Main.vue"
 
@@ -18,7 +18,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(), // 修改为浏览器历史模式
+  history: createWebHashHistory(), // 修改为浏览器历史模式
   routes
 })
 
