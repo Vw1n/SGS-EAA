@@ -82,7 +82,7 @@
         <div></div>
       </div>
 
-      <div class="animate-fade-in cycle-section">
+      <div class="animate-fade-in cycle-section" v-if="value">
         <h4 class="section-title">Lead Time(Working Days)</h4>
         <div class="cycle-content">
           <div class="cycle-item">
@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <div class="test-samples-section">
+      <div class="test-samples-section" v-if="value">
         <div class="section-subtitle">Test Samples</div>
         <div class="test-samples-group">
           <!-- 统一容器 -->
@@ -195,6 +195,7 @@ const clauseMap = {
   ],
   Pad: [
     "Clause 5",
+    "Clause 6",
     "Clause 7",
     "Clause 8",
     "Clause 10",
@@ -223,6 +224,7 @@ const clauseMap = {
     "Clause 8",
     "Clause 9",
     "Clause 10",
+    "Clause 11",
     "Clause 12",
   ],
   "Set-top Box": [
@@ -243,6 +245,7 @@ const clauseMap = {
   ],
   "Smart Phone": [
     "Clause 5",
+    "Clause 6",
     "Clause 7",
     "Clause 8",
     "Clause 10",
@@ -251,6 +254,7 @@ const clauseMap = {
   ],
   "Smart Watch": [
     "Clause 5",
+    "Clause 6",
     "Clause 7",
     "Clause 8",
     "Clause 10",
@@ -352,7 +356,17 @@ const cost = computed(() => {
 
   return totalCost;
 });
+// 获取选中的操作系统文本
+const getSelectedOS = () => {
+  if (!showOsSelection.value) return "无";
 
+  const osList = [];
+  if (checked1.value) osList.push("IOS");
+  if (checked2.value) osList.push("Android");
+  if (checked3.value) osList.push("Others");
+
+  return osList.length ? osList.join(", ") : "无";
+};
 // 导出Excel功能（使用工具函数）
 const handleExport = () => {
   // 准备导出数据
@@ -364,7 +378,7 @@ const handleExport = () => {
     { 项目: "总费用(CNY)", 信息: `¥${cost.value.toLocaleString()}` },
     { 项目: "", 信息: "" },
 
-    { 项目: "测试周期", 信息: "" },
+    { 项目: "测试周期", 信息: "时间" },
     {
       项目: "Wave #1: Release Hight Risk Items",
       信息: `${Time.value[0]} Working Days`,
@@ -379,34 +393,51 @@ const handleExport = () => {
     },
     { 项目: "", 信息: "" },
 
-    { 项目: "测试条款", 信息: "测试条目数", 额外信息: "费用(CNY)" },
+    { 项目: "测试条款", 信息: "测试条目数" },
     ...checkedclause.value.map((clause) => ({
       项目: clause,
       信息: itemsMap[clause] + " Items",
-      额外信息: clausePriceMap[clause]
-        ? `¥${clausePriceMap[clause].toLocaleString()}`
-        : "",
     })),
+    { 项目: "", 信息: "" },
+
+    { 项目: "测试样品", 信息: "数量" },
+    {
+      项目: "正常样机（附件出厂配件）",
+      信息: `2`,
+    },
+    {
+      项目: "RTT 样机",
+      信息: checked4.value ? "3" : "0",
+    },
+    { 项目: "", 信息: "" },
+
+    { 项目: "启动测试需要提供资料", 信息: "备注" },
+    {
+      项目: "EU 2019 882 测试产品技术资料清单",
+      信息: "https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true",
+    },
+    {
+      项目: "User Manual",
+      信息: "",
+    },
+    {
+      项目: "Declaration of Model Differences(如有多型号)",
+      信息: "https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true",
+    },
   ];
 
   // 使用工具函数导出
   exportJsonToExcel(
     exportData,
     `EAA_${value.value}_${new Date().toLocaleDateString().replace(/\//g, "-")}`,
-    { 项目: "项目", 信息: "信息", 额外信息: "额外信息" } // 表头映射（可选）
+    { 项目: "项目", 信息: "信息" },
+    {
+      columnWidths: [
+        { wch: 40 }, // 项目列宽
+        { wch: 30 }, // 信息列宽
+      ],
+    }
   );
-};
-
-// 获取选中的操作系统文本
-const getSelectedOS = () => {
-  if (!showOsSelection.value) return "";
-
-  const osList = [];
-  if (checked1.value) osList.push("IOS");
-  if (checked2.value) osList.push("Android");
-  if (checked3.value) osList.push("Others");
-
-  return osList.length ? osList.join(", ") : "无";
 };
 </script>
 

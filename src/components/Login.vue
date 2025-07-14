@@ -107,7 +107,7 @@ const handleLogin = async () => {
   try {
     await new Promise(resolve => setTimeout(resolve, 800))
     
-    if (username.value === 'ryan.yang@sgs.olm' && password.value === 'SGS0755') {
+    if (username.value === 'ryan.yang@sgs.com' && password.value === 'SGS0755') {
       localStorage.setItem('token', 'true')
       loginCard.value.classList.add('success-animation')
       setTimeout(() => router.push('/Main'), 500)
