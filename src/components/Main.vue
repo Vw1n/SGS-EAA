@@ -1,156 +1,182 @@
 <template>
-  <div class="product-selection-container">
-    <div class="product-card">
-      <!-- 产品选择标题 -->
-      <h3 class="card-title">
-        Please select the product category for EAA Directive
-      </h3>
+  <el-watermark :font="font" :content="['SGS EAA']">
+    <div class="main">
+      <div class="product-selection-container">
+        <div class="product-card">
+          <!-- 产品选择标题 -->
+          <h3 class="card-title">
+            Please select the product category for EAA Directive
+          </h3>
 
-      <!-- 产品下拉选择区 -->
-      <div class="form-group">
-        <el-select
-          v-model="value"
-          placeholder="Product Category"
-          size="large"
-          class="custom-select"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </div>
-
-      <!-- 移动端支持复选框 -->
-      <div class="mobile-support-option" v-if="value">
-        <div v-if="osHight" class="os-hint red-highlight">
-          提醒：所选产品除本体支持安装Apps外，还有可能支持移动端Apps控制场景。
-        </div>
-        <el-checkbox
-          v-model="showOsSelection"
-          label="是否支持移动端"
-          size="large"
-          class="os-checkbox"
-        />
-      </div>
-
-      <!-- 移动端操作系统选择区 (仅当需要时显示) -->
-      <div v-if="showOsSelection" class="os-selection animate-fade-in">
-        <h4 class="section-title">
-          如支持移动端Apps，请勾选Apps安装在移动端的操作系统：
-        </h4>
-        <div class="checkbox-group">
-          <el-checkbox
-            v-model="checked1"
-            label="IOS"
-            size="large"
-            class="custom-checkbox"
-          />
-          <el-checkbox
-            v-model="checked2"
-            label="Android"
-            size="large"
-            class="custom-checkbox"
-          />
-          <el-checkbox
-            v-model="checked3"
-            label="Others"
-            size="large"
-            class="custom-checkbox"
-          />
-          <el-input
-            v-if="checked3"
-            v-model="inputOS"
-            style="width: 120px"
-            placeholder="输入系统名称"
-          />
-        </div>
-      </div>
-
-      <!-- 适用条款区 -->
-      <div v-if="Clause.length" class="clause-section animate-fade-in">
-        <h4 class="section-title">➡Test Clause</h4>
-        <div class="red-alert-wrapper">
-          <div class="red-alert-text">
-            SGS EAA Lab only evaluates the requirements in Table ZB.1 of the EN
-            301 549.
+          <!-- 产品下拉选择区 -->
+          <div class="form-group">
+            <el-select
+              v-model="value"
+              placeholder="Product Category"
+              size="large"
+              class="custom-select"
+            >
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </div>
-          <div class="red-alert-text">
-            This quotation does not include the HAC tests.
+
+          <div class="link-number">
+            <el-input
+              v-if="value === 'Website'"
+              v-model="linkNum"
+              style="width: 300px"
+              placeholder="输入Link数量"
+            />
           </div>
-        </div>
-        <el-checkbox-group
-          v-model="checkedclause"
-          class="checkbox-group clause-checkboxes"
-        >
-          <el-checkbox
-            v-for="(item, index) in Clause"
-            :key="index"
-            :label="item"
-            class="custom-checkbox clause-checkbox-item"
-            :title="titleMap[item]"
-          >
-            <div class="clause-item">
-              <span class="clause-label">{{ item }}</span>
-              <span class="clause-price">({{ itemsMap[item] }} Items)</span>
+
+          <!-- 移动端支持复选框 -->
+          <div class="mobile-support-option" v-if="value">
+            <div v-if="osHight" class="os-hint red-highlight">
+              提醒：所选产品除本体支持安装Apps外，还有可能支持移动端Apps控制场景。
             </div>
-          </el-checkbox>
-        </el-checkbox-group>
-      </div>
+            <el-checkbox
+              v-model="showOsSelection"
+              label="是否支持移动端"
+              size="large"
+              class="os-checkbox"
+            />
+          </div>
 
-      <div class="animate-fade-in cycle-section" v-if="value">
-        <h4 class="section-title">➡Lead Time(Working Days)</h4>
-        <div class="cycle-content">
-          <div class="cycle-item">
-            <span class="cycle-label">Wave #1: Release Hight Risk Items</span>
-            <span class="cycle-value">{{ Time[0] }} Working Days</span>
+          <!-- 移动端操作系统选择区 (仅当需要时显示) -->
+          <div v-if="showOsSelection" class="os-selection animate-fade-in">
+            <h4 class="section-title">
+              如支持移动端Apps，请勾选Apps安装在移动端的操作系统：
+            </h4>
+            <div class="checkbox-group">
+              <el-checkbox
+                v-model="checked1"
+                label="IOS"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-checkbox
+                v-model="checked2"
+                label="Android"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-checkbox
+                v-model="checked3"
+                label="Others"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-input
+                v-if="checked3"
+                v-model="inputOS"
+                style="width: 120px"
+                placeholder="输入系统名称"
+              />
+            </div>
+            <el-input
+              v-if="showOsSelection"
+              v-model="appNum"
+              style="width: 400px"
+              placeholder="输入app数量"
+            />
           </div>
-          <div class="cycle-item">
-            <span class="cycle-label">Wave #1: Release Full Test Items</span>
-            <span class="cycle-value">{{ Time[1] }} Working Days</span>
+
+          <!-- 适用条款区 -->
+          <div v-if="Clause.length" class="clause-section animate-fade-in">
+            <h4 class="section-title">➡Test Clause</h4>
+            <div class="red-alert-wrapper">
+              <div class="red-alert-text">
+                SGS EAA Lab only evaluates the requirements in Table ZB.1 of the
+                EN 301 549.
+              </div>
+              <div class="red-alert-text">
+                This quotation does not include the HAC tests.
+              </div>
+            </div>
+            <el-checkbox-group
+              v-model="checkedclause"
+              class="checkbox-group clause-checkboxes"
+            >
+              <el-checkbox
+                v-for="(item, index) in Clause"
+                :key="index"
+                :label="item"
+                class="custom-checkbox clause-checkbox-item"
+                :title="titleMap[item]"
+              >
+                <div class="clause-item">
+                  <span class="clause-label">{{ item }}</span>
+                  <span class="clause-price">({{ itemsMap[item] }} Items)</span>
+                </div>
+              </el-checkbox>
+            </el-checkbox-group>
           </div>
-          <div class="cycle-item">
-            <span class="cycle-label">Wave #2: Release Test Report + VoC</span>
-            <span class="cycle-value">{{ Time[2] }} Working Days</span>
+
+          <div class="animate-fade-in cycle-section" v-if="value">
+            <h4 class="section-title">➡Lead Time(Working Days)</h4>
+            <div class="cycle-content">
+              <div class="cycle-item">
+                <span class="cycle-label"
+                  >Wave #1: Release Hight Risk Items</span
+                >
+                <span class="cycle-value">{{ Time[0] }} Working Days</span>
+              </div>
+              <div class="cycle-item">
+                <span class="cycle-label"
+                  >Wave #1: Release Full Test Items</span
+                >
+                <span class="cycle-value">{{ Time[1] }} Working Days</span>
+              </div>
+              <div class="cycle-item">
+                <span class="cycle-label"
+                  >Wave #2: Release Test Report + VoC</span
+                >
+                <span class="cycle-value">{{ Time[2] }} Working Days</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="test-samples-section" v-if="value">
+            <div class="section-subtitle">➡Test Samples</div>
+            <div class="test-samples-group">
+              <!-- 统一容器 -->
+              <div class="sample-quantity">
+                Sample Quantity
+                <span class="quantity-value">{{ quantity }}</span>
+              </div>
+              <el-checkbox
+                v-model="checked4"
+                label="是否支持RTT"
+                size="large"
+                class="sample-checkbox"
+              />
+              <el-checkbox
+                v-model="checked5"
+                label="是否支持HAC"
+                size="large"
+                class="sample-checkbox"
+              />
+            </div>
+          </div>
+
+          <!-- 费用展示区 -->
+          <div class="cost-section animate-fade-in">
+            <h4 class="section-title">➡Quotation(CNY)</h4>
+            <div class="cost-display">¥{{ cost.toLocaleString() }}</div>
           </div>
         </div>
-      </div>
-
-      <div class="test-samples-section" v-if="value">
-        <div class="section-subtitle">➡Test Samples</div>
-        <div class="test-samples-group">
-          <!-- 统一容器 -->
-          <div class="sample-quantity">
-            Sample Quantity <span class="quantity-value">{{ quantity }}</span>
-          </div>
-          <el-checkbox
-            v-model="checked4"
-            label="是否支持RTT"
-            size="large"
-            class="sample-checkbox"
-          />
-          <el-checkbox
-            v-model="checked5"
-            label="是否支持HAC"
-            size="large"
-            class="sample-checkbox"
-          />
+        <div class="export-section">
+          <ExportButton :isDisabled="!value" @export="handleExport" />
         </div>
       </div>
-
-      <!-- 费用展示区 -->
-      <div class="cost-section animate-fade-in">
-        <h4 class="section-title">➡Quotation(CNY)</h4>
-        <div class="cost-display">¥{{ cost.toLocaleString() }}</div>
-      </div>
+      <logout />
     </div>
-    <div class="export-section">
-      <ExportButton :isDisabled="!value" @export="handleExport" />
-    </div>
-  </div>
-  <logout />
+  </el-watermark>
 </template>
 
 <script setup>
@@ -200,6 +226,10 @@ const checked5 = ref(false);
 const quantity = computed(() => (checked4.value ? 5 : 2));
 
 const inputOS = ref("");
+
+const appNum = ref(null);
+const linkNum = ref(null);
+
 // 章节映射
 const clauseMap = {
   "All in One(AIO)": [
@@ -392,6 +422,12 @@ const cost = computed(() => {
     totalCost += clausePriceMap[clause] || 0;
   });
 
+  if (linkNum) {
+    totalCost += linkNum.value * 500;
+  }
+  if (appNum) {
+    totalCost += appNum.value * 3000;
+  }
   return totalCost;
 });
 // 获取选中的操作系统文本
@@ -480,6 +516,10 @@ const handleExport = () => {
 </script>
 
 <style scoped>
+.main {
+  min-width: 100vw;
+  min-height: 100vh;
+}
 /* 容器与卡片基础样式 */
 .product-selection-container {
   max-width: 700px;

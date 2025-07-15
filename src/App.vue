@@ -8,4 +8,5 @@ import Head from "./components/Head.vue";
 </template>
 
 <style scoped>
+
 </style>
