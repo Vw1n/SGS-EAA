@@ -10,7 +10,7 @@
       <div class="form-group">
         <el-select
           v-model="value"
-          placeholder="product category"
+          placeholder="Product Category"
           size="large"
           class="custom-select"
         >
@@ -26,7 +26,7 @@
       <!-- 移动端支持复选框 -->
       <div class="mobile-support-option" v-if="value">
         <div v-if="osHight" class="os-hint red-highlight">
-          提醒：该类型设备有可能支持移动端程序应用（Apps）
+          提醒：所选产品除本体支持安装Apps外，还有可能支持移动端Apps控制场景。
         </div>
         <el-checkbox
           v-model="showOsSelection"
@@ -38,7 +38,9 @@
 
       <!-- 移动端操作系统选择区 (仅当需要时显示) -->
       <div v-if="showOsSelection" class="os-selection animate-fade-in">
-        <h4 class="section-title">移动端支持的操作系统</h4>
+        <h4 class="section-title">
+          如支持移动端Apps，请勾选Apps安装在移动端的操作系统：
+        </h4>
         <div class="checkbox-group">
           <el-checkbox
             v-model="checked1"
@@ -58,32 +60,48 @@
             size="large"
             class="custom-checkbox"
           />
+          <el-input
+            v-if="checked3"
+            v-model="inputOS"
+            style="width: 120px"
+            placeholder="输入系统名称"
+          />
         </div>
       </div>
 
       <!-- 适用条款区 -->
       <div v-if="Clause.length" class="clause-section animate-fade-in">
-        <h4 class="section-title">Test Clause</h4>
-        <div class="red-alert-text">
-          SGS EAA Lab only evaluates the requirements in Table ZB.1 of the EN
-          301 549.
+        <h4 class="section-title">➡Test Clause</h4>
+        <div class="red-alert-wrapper">
+          <div class="red-alert-text">
+            SGS EAA Lab only evaluates the requirements in Table ZB.1 of the EN
+            301 549.
+          </div>
+          <div class="red-alert-text">
+            This quotation does not include the HAC tests.
+          </div>
         </div>
-        <el-checkbox-group v-model="checkedclause" class="checkbox-group">
+        <el-checkbox-group
+          v-model="checkedclause"
+          class="checkbox-group clause-checkboxes"
+        >
           <el-checkbox
             v-for="(item, index) in Clause"
             :key="index"
             :label="item"
-            class="custom-checkbox"
+            class="custom-checkbox clause-checkbox-item"
+            :title="titleMap[item]"
           >
-            {{ item }}
-            <span class="clause-price">({{ itemsMap[item] }} Items)</span>
+            <div class="clause-item">
+              <span class="clause-label">{{ item }}</span>
+              <span class="clause-price">({{ itemsMap[item] }} Items)</span>
+            </div>
           </el-checkbox>
         </el-checkbox-group>
-        <div></div>
       </div>
 
       <div class="animate-fade-in cycle-section" v-if="value">
-        <h4 class="section-title">Lead Time(Working Days)</h4>
+        <h4 class="section-title">➡Lead Time(Working Days)</h4>
         <div class="cycle-content">
           <div class="cycle-item">
             <span class="cycle-label">Wave #1: Release Hight Risk Items</span>
@@ -101,24 +119,30 @@
       </div>
 
       <div class="test-samples-section" v-if="value">
-        <div class="section-subtitle">Test Samples</div>
+        <div class="section-subtitle">➡Test Samples</div>
         <div class="test-samples-group">
           <!-- 统一容器 -->
+          <div class="sample-quantity">
+            Sample Quantity <span class="quantity-value">{{ quantity }}</span>
+          </div>
           <el-checkbox
             v-model="checked4"
-            label="是否支持RTT功能"
+            label="是否支持RTT"
             size="large"
             class="sample-checkbox"
           />
-          <div class="sample-quantity">
-            Sample quantity <span class="quantity-value">{{ quantity }}</span>
-          </div>
+          <el-checkbox
+            v-model="checked5"
+            label="是否支持HAC"
+            size="large"
+            class="sample-checkbox"
+          />
         </div>
       </div>
 
       <!-- 费用展示区 -->
       <div class="cost-section animate-fade-in">
-        <h4 class="section-title">Quotation(CNY)</h4>
+        <h4 class="section-title">➡Quotation(CNY)</h4>
         <div class="cost-display">¥{{ cost.toLocaleString() }}</div>
       </div>
     </div>
@@ -139,14 +163,14 @@ import { exportJsonToExcel } from "../utils/excel-export";
 // 下拉选择框
 const value = ref("");
 const options = [
-  { value: "AIO", label: "AIO" },
+  { value: "All in One(AIO)", label: "All in One(AIO)" },
   { value: "ATM", label: "ATM" },
   { value: "Camera", label: "Camera" },
   { value: "Pad", label: "Pad" },
   { value: "POS", label: "POS" },
   { value: "Projector(with OS)", label: "Projector(with OS)" },
   { value: "Telephone", label: "Telephone" },
-  { value: "Router/CPE/AP/Gatway", label: "Router/CPE/AP/Gatway" },
+  { value: "Router/CPE/AP/Gateway", label: "Router/CPE/AP/Gateway" },
   { value: "Set-top Box", label: "Set-top Box" },
   { value: "Smart Home Devices", label: "Smart Home Devices" },
   { value: "Smart Phone", label: "Smart Phone" },
@@ -158,7 +182,7 @@ const options = [
 const osHightMap = {
   Camera: true,
   POS: true,
-  "Router/CPE/AP/Gatway": true,
+  "Router/CPE/AP/Gateway": true,
   "Set-top Box": true,
   "Smart Home Devices": true,
   Television: true,
@@ -172,11 +196,13 @@ const checked3 = ref(false);
 const showOsSelection = ref(false);
 
 const checked4 = ref(false);
+const checked5 = ref(false);
 const quantity = computed(() => (checked4.value ? 5 : 2));
 
+const inputOS = ref("");
 // 章节映射
 const clauseMap = {
-  AIO: [
+  "All in One(AIO)": [
     "Clause 5",
     "Clause 7",
     "Clause 8",
@@ -219,7 +245,7 @@ const clauseMap = {
     "Clause 11",
     "Clause 12",
   ],
-  "Router/CPE/AP/Gatway": [
+  "Router/CPE/AP/Gateway": [
     "Clause 5",
     "Clause 8",
     "Clause 9",
@@ -273,6 +299,18 @@ const clauseMap = {
 };
 const Clause = computed(() => clauseMap[value.value] || []);
 
+// 章节标题映射
+const titleMap = {
+  "Clause 5": "Generic Requirements丨一般要求",
+  "Clause 6":
+    "ICT supporting continuous bidirectional communication丨支持连续的信息和通信技术功能的信息和技术",
+  "Clause 7": "ICT with video capabilities丨具有视频功能的ICT",
+  "Clause 8": "Hardware丨硬件",
+  "Clause 9": "Web丨网页",
+  "Clause 10": "Non-web documents 丨非网页文档",
+  "Clause 11": "Software 丨软件",
+  "Clause 12": "Information about products and services丨有关产品和服务的信息",
+};
 // 章节测试条目映射
 const itemsMap = {
   "Clause 5": 38,
@@ -321,20 +359,20 @@ watch(
 
 // 周期映射
 const TimeMap = {
-  AIO: [10, 20, 23],
-  ATM: [10, 17, 20],
-  Camera: [10, 20, 23],
-  Pad: [19, 30, 33],
-  POS: [10, 17, 20],
-  "Projector(with OS)": [10, 20, 23],
-  Telephone: [10, 17, 20],
-  "Router/CPE/AP/Gatway": [15, 20, 23],
-  "Set-top Box": [15, 20, 23],
-  "Smart Home Devices": [10, 20, 23],
-  "Smart Phone": [20, 30, 33],
-  "Smart Watch": [10, 20, 23],
-  Television: [15, 20, 23],
-  Website: [10, 20, 23],
+  "All in One(AIO)": [10, 10, 3],
+  ATM: [10, 7, 3],
+  Camera: [10, 10, 3],
+  Pad: [19, 11, 3],
+  POS: [10, 7, 3],
+  "Projector(with OS)": [10, 10, 3],
+  Telephone: [10, 7, 3],
+  "Router/CPE/AP/Gateway": [15, 5, 3],
+  "Set-top Box": [15, 5, 3],
+  "Smart Home Devices": [10, 10, 3],
+  "Smart Phone": [20, 10, 3],
+  "Smart Watch": [10, 10, 3],
+  Television: [15, 5, 3],
+  Website: [10, 10, 3],
 };
 const Time = computed(() => TimeMap[value.value] || []);
 
@@ -545,6 +583,39 @@ const handleExport = () => {
   padding-left: 4px;
   font-weight: 500;
   border-left: 2px solid #ffccc7;
+}
+
+/* 条款区复选框组布局优化 */
+.clause-section {
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap; /* 允许换行 */
+  gap: 12px 10px; /* 水平间距20px，垂直间距12px，确保多行对齐 */
+  padding: 5px 0; /* 避免边缘复选框与容器贴紧 */
+  align-items: center; /* 垂直方向居中对齐 */
+}
+.clause-item {
+  width: 120px;
+}
+/* 单个复选框样式优化，确保对齐基准一致 */
+.custom-checkbox {
+  flex: 0 0 auto; /* 不拉伸，保持自身宽度 */
+  min-width: 120px; /* 最小宽度，避免过短内容导致排列混乱 */
+  padding: 4px 0; /* 统一垂直内边距，确保行高一致 */
+  display: flex;
+  align-items: center; /* 复选框图标与文字垂直居中 */
+}
+
+/* 调整复选框与文字的间距（适配element-ui的默认样式） */
+.custom-checkbox .el-checkbox__label {
+  margin-left: 8px; /* 固定复选框与文字的间距 */
+  white-space: nowrap; /* 避免文字内部换行 */
 }
 
 /* 周期区域样式 */
