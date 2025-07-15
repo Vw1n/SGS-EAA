@@ -1,7 +1,7 @@
 <template>
   <div class="lab-info-container">
     <!-- 卡片主体 -->
-    <div class="lab-info-fixed" v-show="isVisible">
+    <div class="lab-info-wrapper" v-show="isVisible">
       <div class="lab-info-card">
         <!-- 关闭按钮 -->
         <div class="close-btn" @click="closeCard">×</div>
@@ -32,7 +32,7 @@
 export default {
   data() {
     return {
-      isVisible: true, // 控制卡片显示状态
+      isVisible: true,
     };
   },
   methods: {
@@ -48,7 +48,7 @@ export default {
 
 <style>
 :root {
-  /* 颜色变量 */
+  /* 颜色变量保持不变 */
   --primary-color: #003366;
   --secondary-color: #2d4271;
   --text-light: #6b7c93;
@@ -57,47 +57,45 @@ export default {
   --bg-light: #f5f7fa;
   --accent-color: #e53e3e;
 
-  /* 尺寸变量 */
-  --card-width: 400px;
-  --card-padding: 24px;
-  /* 图片尺寸 */
-  --logo-size: 100px;
-  --title-size: 20px;
-  --subtitle-size: 15px;
-  --version-size: 13px;
+  /* 固定尺寸（仅再次减小高度） */
+  --card-fixed-width: 600px;
+  --card-fixed-height: 100px; /* 桌面端从120px→100px */
 }
 
 .lab-info-container {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px 0;
 }
 
-.lab-info-fixed {
-  position: relative;
+.lab-info-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .lab-info-card {
-  width: var(--card-width);
-  padding: var(--card-padding);
-  background-color: rgba(255, 255, 255, 0.96);
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  width: var(--card-fixed-width);
+  height: var(--card-fixed-height);
+  max-width: 90%;
+  padding: 5px 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
   border-left: 4px solid var(--primary-color);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   position: relative;
-  /* 确保卡片高度自适应内容，不固定高度 */
+  box-sizing: border-box;
 }
 
-/* 关闭按钮样式 */
 .close-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 24px;
-  height: 24px;
-  font-size: 18px;
+  top: 10px; /* 略微上移适应新高度 */
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
   color: var(--text-light);
   cursor: pointer;
   display: flex;
@@ -105,120 +103,144 @@ export default {
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
+  background: var(--bg-light);
 }
 
 .close-btn:hover {
-  background-color: var(--bg-light);
-  color: var(--accent-color);
+  background-color: var(--primary-color);
+  color: white;
   transform: scale(1.1);
 }
 
 .info-header {
   display: flex;
-  align-items: center; /* 垂直居中对齐 */
-  gap: 12px; /* 缩小图片与文本的间距，适配大图片 */
-  margin-bottom: 16px;
+  align-items: center;
+  gap: 20px;
+  height: calc(100% - 5px); /* 适应新高度 */
 }
 
 .text-group {
-  flex: 1; /* 文本部分占剩余空间，确保不被图片挤压 */
-  min-width: 0; /* 解决flex子元素内容溢出问题 */
+  flex: 1;
+  min-width: 0;
+  padding: 3px 0; /* 减少内边距 */
 }
 
 .main-title {
-  font-size: var(--title-size);
+  font-size: 18px; /* 标题略小适应高度 */
   font-weight: 700;
   color: var(--primary-color);
-  margin-bottom: 4px;
-  letter-spacing: 0.3px;
+  margin-bottom: 4px; /* 进一步减小间距 */
+  letter-spacing: 0.2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .standard-code {
-  font-size: var(--subtitle-size);
+  font-size: 14px; /* 副标题略小 */
   color: var(--secondary-color);
   font-family: "Segoe UI", Roboto, sans-serif;
-  margin-bottom: 2px;
-}
-
-.version-details {
-  font-size: var(--version-size);
-  color: var(--secondary-color);
-  font-family: "Segoe UI", Roboto, sans-serif;
-  line-height: 1.4;
-}
-
-.standard-version {
+  margin-bottom: 2px; /* 最小化间距 */
   font-weight: 500;
 }
 
-.app-version {
+.version-details {
+  font-size: 12px; /* 版本号略小 */
   color: var(--text-light);
+  font-family: "Segoe UI", Roboto, sans-serif;
+  line-height: 1.3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.standard-version {
+  color: var(--secondary-color);
+  font-weight: 500;
 }
 
 .lab-logo {
-  width: var(--logo-size);
-  height: var(--logo-size);
-  object-fit: contain; /* 保持图片比例，不拉伸 */
-  border-radius: 5px;
+  width: 75px; /* 图片尺寸略减适应高度 */
+  height: 75px;
+  object-fit: contain;
+  border-radius: 6px;
   padding: 6px;
   background-color: var(--bg-light);
-  /* 确保图片不超出卡片 */
-  max-width: calc(100% - 40px);
+  border: 1px solid var(--border-color);
 }
 
 .lab-info-card:hover {
-  box-shadow: 0 10px 25px rgba(0, 51, 102, 0.15);
+  box-shadow: 0 8px 20px rgba(0, 51, 102, 0.15);
   transform: translateY(-2px);
 }
 
-/* 重新展示按钮样式 */
 .show-btn {
   background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 8px 12px;
+  padding: 8px 16px;
   font-size: 14px;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 51, 102, 0.2);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
+  margin-top: 10px;
 }
 
 .show-btn:hover {
   background-color: #004080;
-  box-shadow: 0 6px 16px rgba(0, 51, 102, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
   transform: translateY(-1px);
 }
 
-.show-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 51, 102, 0.2);
-}
-
-/* 图标间距 */
 .mr-1 {
-  margin-right: 4px;
+  margin-right: 6px;
 }
 
-/* 响应式设计 */
-@media (max-width: 576px) {
+/* 响应式高度同步减小 */
+@media (max-width: 768px) {
   :root {
-    --card-width: 280px;
-    --card-padding: 18px;
-    --logo-size: 90px; /* 小屏幕下图片尺寸稍小但仍比原来大 */
-    --title-size: 18px;
-    --subtitle-size: 14px;
-    --version-size: 12px;
+    --card-fixed-width: 90%;
+    --card-fixed-height: 95px; /* 从110px→95px */
   }
 
-  .lab-info-container {
-    top: 10px;
-    left: 10px;
+  .lab-logo {
+    width: 70px;
+    height: 70px;
+  }
+
+  .main-title {
+    font-size: 17px;
+  }
+
+  .standard-code {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  :root {
+    --card-fixed-height: 85px; /* 从100px→85px */
+  }
+
+  .lab-logo {
+    width: 65px;
+    height: 65px;
+  }
+
+  .main-title {
+    font-size: 16px;
+  }
+
+  .standard-code {
+    font-size: 12px;
+  }
+
+  .version-details {
+    font-size: 11px;
+    gap: 4px;
   }
 }
 </style>
