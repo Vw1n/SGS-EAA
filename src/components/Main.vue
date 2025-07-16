@@ -67,6 +67,9 @@ const checkedRTT = ref(false);
 const checkedHAC = ref(false);
 const quantity = computed(() => {
   let quantity = 2;
+  if (value.value == "Treadmill") {
+    quantity -= 1;
+  }
   if (checkedRTT.value) quantity += 3;
   if (checkedHAC.value) quantity += 1;
   return quantity;
@@ -145,7 +148,7 @@ const clauseMap = {
     "Clause 11",
     "Clause 12",
   ],
-  "Treadmill": [
+  Treadmill: [
     "Clause 5",
     "Clause 7",
     "Clause 8",
