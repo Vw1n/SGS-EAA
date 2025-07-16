@@ -58,7 +58,7 @@ export default {
   --accent-color: #e53e3e;
 
   /* 固定尺寸（仅再次减小高度） */
-  --card-fixed-width: 600px;
+  --card-fixed-width: 670px;
   --card-fixed-height: 100px; /* 桌面端从120px→100px */
 }
 

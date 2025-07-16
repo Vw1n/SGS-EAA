@@ -566,6 +566,8 @@ const handleExport = () => {
                 size="large"
                 class="sample-checkbox"
               />
+            </div>
+            <div v-if="value == 'Smart Phone' || value == 'Telephone'">
               <el-checkbox
                 v-model="checkedHAC"
                 label="是否支持HAC"
@@ -608,7 +610,7 @@ const handleExport = () => {
 .product-selection-container {
   max-width: 700px;
   margin: 0 auto;
-  padding: 15px;
+  padding: 0 15px;
 }
 
 .product-card {
@@ -645,8 +647,8 @@ const handleExport = () => {
 
 /* 移动端支持选项区 */
 .mobile-support-option {
-  padding: 15px;
-  margin: 15px 0;
+  padding: 0 15px;
+  margin: 0;
   border-radius: 8px;
   background: #fff;
   border: 1px solid rgba(237, 109, 45, 0.2);
@@ -665,7 +667,7 @@ const handleExport = () => {
 
 /* 操作系统选择区 */
 .os-selection {
-  padding: 15px;
+  padding: 5px 15px;
   margin: 10px 0;
   border-radius: 8px;
   background: #fff;
@@ -677,14 +679,14 @@ const handleExport = () => {
   display: flex;
   flex-wrap: wrap;
   gap: 10px 15px;
-  padding: 10px 0;
+  padding: 5px 0;
   align-items: center;
 }
 
 .custom-checkbox {
   flex: 0 0 auto;
   min-width: 100px;
-  padding: 5px 0;
+  padding: 0;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -696,7 +698,7 @@ const handleExport = () => {
   font-weight: 600;
   color: #ed6d2d;
   margin: 0;
-  padding: 8px 12px;
+  padding: 2px 12px;
   border-radius: 4px;
   background: rgba(237, 109, 45, 0.1);
   display: inline-block;
@@ -707,7 +709,7 @@ const handleExport = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
+  padding: 5px 15px;
   background: rgba(237, 109, 45, 0.05);
   border-bottom: 1px solid rgba(237, 109, 45, 0.1);
 }
@@ -734,7 +736,7 @@ const handleExport = () => {
 .cycle-section-wrapper,
 .test-samples-section-wrapper,
 .cost-section-wrapper {
-  margin: 15px 0;
+  margin: 5px 0;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
@@ -745,7 +747,7 @@ const handleExport = () => {
 .cycle-section,
 .test-samples-section,
 .cost-section {
-  padding: 15px;
+  padding: 3px 15px;
   background: #fff;
 }
 
