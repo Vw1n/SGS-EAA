@@ -1,193 +1,230 @@
+<script setup>
+import { useAuthStore } from '../stores/authStore'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+const authStore = useAuthStore();
+const router = useRouter();
+const clientShow = ref(false);
+const innerShow = ref(false);
+const username = ref("");
+const password = ref("");
+const errorMessage = ref("");
+const loading = ref(false);
+const loginCard = ref(null);
+
+const handleLogin = async () => {
+  errorMessage.value = "";
+
+  if (!username.value) {
+    errorMessage.value = "请输入账号";
+    return;
+  }
+
+  if (!password.value) {
+    errorMessage.value = "请输入密码";
+    return;
+  }
+
+  loading.value = true;
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    if (
+      (username.value === "ryan.yang@sgs.com" &&
+        password.value === "SGS0755") ||
+      (username.value === "123" && password.value === "123")
+    ) {
+      localStorage.setItem("token", "true");
+      authStore.changeAuth("inner");
+      loginCard.value.classList.add("success-animation");
+      setTimeout(() => router.push("/Main"), 500);
+    } else {
+      errorMessage.value = "账号或密码错误";
+      loginCard.value.classList.add("shake-animation");
+      setTimeout(
+        () => loginCard.value.classList.remove("shake-animation"),
+        500
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    errorMessage.value = "登录过程中发生错误，请重试";
+  } finally {
+    loading.value = false;
+  }
+};
+const changeClient = () => {
+  clientShow.value = true;
+  authStore.changeAuth("client");
+  localStorage.setItem("token", "visit");
+  loginCard.value.classList.add("success-animation");
+  setTimeout(() => router.push("/Main"), 500);
+};
+const changeInner = () => {
+  innerShow.value = true;
+};
+onMounted(() => {
+  loginCard.value = document.querySelector(".login-card");
+});
+</script>
 <template>
   <div class="login-container">
     <!-- 背景图片 -->
     <div class="bg-image"></div>
-    
-    <!-- 半透明遮罩（调整透明度，让背景图可见） -->
+
+    <!-- 半透明遮罩 -->
     <div class="bg-overlay"></div>
-    
+
     <!-- 登录卡片 -->
-    <div class="login-card animate-fade-in">
+    <div class="login-card animate-fade-in" ref="loginCard">
       <!-- 品牌标识 -->
       <div class="brand-logo">
         <i class="fa fa-shield-alt"></i>
         <span class="brand-text">SGS EAA</span>
       </div>
-      
-      <!-- 标题 -->
-      <h1 class="login-title">登录</h1>
-      
-      <!-- 错误提示 -->
-      <div v-if="errorMessage" class="error-notification">
-        <i class="fa fa-exclamation-circle"></i>
-        <span>{{ errorMessage }}</span>
+      <div class="select-type" v-if="!clientShow && !innerShow">
+        <el-button type="success" @click="changeClient">客户登录</el-button>
+        <el-button type="warning" @click="changeInner">内部登录</el-button>
       </div>
-      
-      <!-- 登录表单 -->
-      <form @submit.prevent="handleLogin" class="login-form">
-        <!-- 账号输入 -->
-        <div class="form-group">
-          <div class="input-group" :class="{ 'is-error': errorMessage }">
-            <span class="input-icon">
-              <i class="fa fa-user"></i>
-            </span>
-            <input
-              v-model="username"
-              type="text"
-              placeholder="请输入账号"
-              class="form-input"
-              autocomplete="off"
-              required
-            />
-          </div>
+      <div v-if="innerShow">
+        <!-- 标题 -->
+        <h1 class="login-title">登录</h1>
+
+        <!-- 错误提示 -->
+        <div v-if="errorMessage" class="error-notification">
+          <i class="fa fa-exclamation-circle"></i>
+          <span>{{ errorMessage }}</span>
         </div>
-        
-        <!-- 密码输入 -->
-        <div class="form-group">
-          <div class="input-group" :class="{ 'is-error': errorMessage }">
-            <span class="input-icon">
-              <i class="fa fa-lock"></i>
-            </span>
-            <input
-              v-model="password"
-              type="password"
-              placeholder="请输入密码"
-              class="form-input"
-              required
-            />
+
+        <!-- 登录表单 -->
+        <form @submit.prevent="handleLogin" class="login-form">
+          <!-- 账号输入 -->
+          <div class="form-group">
+            <div class="input-group" :class="{ 'is-error': errorMessage }">
+              <span class="input-icon">
+                <i class="fa fa-user"></i>
+              </span>
+              <input
+                v-model="username"
+                type="text"
+                placeholder="请输入账号"
+                class="form-input"
+                autocomplete="off"
+                required
+              />
+            </div>
           </div>
-        </div>
-        
-        <!-- 登录按钮 -->
-        <button
-          type="submit"
-          class="login-btn"
-          :disabled="loading"
-          :class="{ 'btn-loading': loading }"
-        >
-          <span v-if="!loading">登录系统</span>
-          <span v-else>
-            <i class="fa fa-spinner fa-spin"></i> 登录中...
-          </span>
-        </button>
-      </form>
+
+          <!-- 密码输入 -->
+          <div class="form-group">
+            <div class="input-group" :class="{ 'is-error': errorMessage }">
+              <span class="input-icon">
+                <i class="fa fa-lock"></i>
+              </span>
+              <input
+                v-model="password"
+                type="password"
+                placeholder="请输入密码"
+                class="form-input"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- 登录按钮 -->
+          <button
+            type="submit"
+            class="login-btn"
+            :disabled="loading"
+            :class="{ 'btn-loading': loading }"
+          >
+            <span v-if="!loading">登录系统</span>
+            <span v-else>
+              <i class="fa fa-spinner fa-spin"></i> 登录中...
+            </span>
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-// 表单状态
-const username = ref('')
-const password = ref('')
-const errorMessage = ref('')
-const loading = ref(false)
-const loginCard = ref(null)
-
-// 登录处理
-const handleLogin = async () => {
-  errorMessage.value = ''
-  
-  if (!username.value) {
-    errorMessage.value = '请输入账号'
-    return
-  }
-  
-  if (!password.value) {
-    errorMessage.value = '请输入密码'
-    return
-  }
-  
-  loading.value = true
-  
-  try {
-    await new Promise(resolve => setTimeout(resolve, 800))
-    if ((username.value === 'ryan.yang@sgs.com' && password.value === 'SGS0755')||(username.value === '123' && password.value === '123')) {
-      localStorage.setItem('token', 'true')
-      loginCard.value.classList.add('success-animation')
-      setTimeout(() => router.push('/Main'), 500)
-    } else {
-      errorMessage.value = '账号或密码错误'
-      loginCard.value.classList.add('shake-animation')
-      setTimeout(() => loginCard.value.classList.remove('shake-animation'), 500)
-    }
-  } catch (error) {
-    errorMessage.value = '登录过程中发生错误，请重试'
-  } finally {
-    loading.value = false
-  }
+<style scoped>
+/* 核心：禁止全局滚动 */
+html,
+body {
+  overflow: hidden; /* 禁止页面滚动 */
+  height: 100%; /* 确保根元素占满视口 */
 }
 
-onMounted(() => {
-  loginCard.value = document.querySelector('.login-card')
-})
-</script>
-
-<style scoped>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
+/* 登录容器：确保占满视口且无溢出 */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh; /* 精确占满视口高度 */
   position: relative;
-  overflow: hidden;
-  padding: 20px;
+  overflow: hidden; /* 容器内禁止滚动 */
+  padding: 16px;
 }
 
-/* 背景图片（核心修复） */
+/* 背景图片：确保不超出容器 */
 .bg-image {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* 1. 用@别名引用资源（Vue项目推荐，避免路径错误） */
-  background-image: url('@/assets/logo.png');
-  /* 2. 确保图片重复显示（如果图片小，避免空白） */
+  inset: 0;
+  background-image: url("@/assets/logo.png");
   background-repeat: no-repeat;
-  /* 3. 调整位置和尺寸：居中+覆盖，确保可见 */
   background-position: center;
-  background-size: cover; /* 覆盖全屏，优先保证可见 */
-  /* 4. 提高透明度（0.3比0.15更明显） */
+  background-size: contain;
   opacity: 0.3;
   z-index: 0;
-  /* 调试用：如果还看不到，取消下面注释，确认元素是否存在 */
-  /* border: 2px solid red; */
+  transform: scale(1.1);
 }
 
-/* 遮罩层（弱化，让背景图可见） */
+/* 遮罩层 */
 .bg-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* 降低遮罩透明度（0.85比0.95更透） */
-  background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(245,247,250,0.9) 100%);
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(245, 247, 250, 0.95) 100%
+  );
   z-index: 1;
 }
 
+/* 登录卡片：限制最大高度，确保不超出视口 */
 .login-card {
   width: 100%;
   max-width: 400px;
+  min-width: 280px;
   background: white;
   border-radius: 20px;
-  padding: 48px 36px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+  /* 动态内边距，最大不超过视口的20% */
+  padding: clamp(24px, 8vw, 36px) clamp(20px, 5vw, 30px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
   position: relative;
-  z-index: 2; /* 确保在最上层 */
-  transition: all 0.3s ease;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 关键：限制卡片最大高度为视口的85%，防止溢出 */
+  max-height: 85vh;
+  /* 内容溢出时内部滚动（极端情况） */
+  overflow-y: auto;
+  /* 隐藏内部滚动条但保留滚动功能 */
+  scrollbar-width: none;
+}
+
+/* 隐藏内部滚动条（webkit浏览器） */
+.login-card::-webkit-scrollbar {
+  display: none;
 }
 
 /* 品牌标识 */
@@ -195,38 +232,43 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: clamp(18px, 5vw, 24px);
 }
 
 .brand-logo .fa-shield-alt {
   color: #409eff;
-  font-size: 28px;
+  font-size: clamp(24px, 6vw, 28px);
   margin-right: 10px;
 }
 
 .brand-text {
-  font-size: 24px;
+  font-size: clamp(18px, 5vw, 22px);
   font-weight: 600;
   color: #303133;
 }
-
+.select-type{
+  display: flex;
+  justify-content: center;
+}
+/* 标题 */
 .login-title {
-  font-size: 24px;
+  font-size: clamp(18px, 5vw, 22px);
   font-weight: 500;
   color: #303133;
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: clamp(18px, 5vw, 24px);
 }
 
+/* 错误提示 */
 .error-notification {
   display: flex;
   align-items: center;
-  padding: 12px;
+  padding: 10px;
   background-color: #fef0f0;
   color: #f56c6c;
   border-radius: 8px;
-  margin-bottom: 24px;
-  font-size: 14px;
+  margin-bottom: 18px;
+  font-size: 13px;
   opacity: 0;
   transform: translateY(-10px);
   animation: fadeInUp 0.3s ease forwards;
@@ -236,16 +278,19 @@ onMounted(() => {
   margin-right: 8px;
 }
 
+/* 表单组 */
 .form-group {
-  margin-bottom: 24px;
+  margin-bottom: clamp(16px, 4vw, 20px);
 }
 
+/* 输入框容器 */
 .input-group {
   display: flex;
   align-items: center;
   border: 1px solid #dcdfe6;
   border-radius: 10px;
-  padding: 0 16px;
+  padding: 0 14px;
+  height: clamp(42px, 10vw, 48px);
   transition: all 0.3s ease;
 }
 
@@ -257,18 +302,21 @@ onMounted(() => {
   border-color: #f56c6c;
 }
 
+/* 输入框图标 */
 .input-icon {
-  width: 24px;
+  width: 22px;
   color: #909399;
-  margin-right: 12px;
+  margin-right: 10px;
+  flex-shrink: 0;
 }
 
+/* 输入框样式 */
 .form-input {
   flex: 1;
-  height: 50px;
+  height: 100%;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: clamp(14px, 3vw, 15px);
   color: #303133;
   background: transparent;
 }
@@ -277,31 +325,33 @@ onMounted(() => {
   color: #c0c4cc;
 }
 
+/* 登录按钮 */
 .login-btn {
   width: 100%;
-  height: 52px;
+  height: clamp(44px, 10vw, 48px);
   background: linear-gradient(135deg, #409eff, #66b1ff);
   border: none;
   border-radius: 10px;
   color: white;
-  font-size: 16px;
+  font-size: clamp(14px, 3vw, 15px);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 10px 20px rgba(64, 158, 255, 0.2);
+  box-shadow: 0 5px 15px rgba(64, 158, 255, 0.2);
+  margin-top: 8px;
 }
 
-.login-btn:hover {
+.login-btn:hover:not(.btn-loading) {
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(64, 158, 255, 0.3);
+  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.3);
 }
 
-.login-btn:active {
+.login-btn:active:not(.btn-loading) {
   transform: translateY(0);
-  box-shadow: 0 5px 10px rgba(64, 158, 255, 0.2);
+  box-shadow: 0 3px 10px rgba(64, 158, 255, 0.2);
 }
 
 .login-btn.btn-loading {
@@ -309,27 +359,62 @@ onMounted(() => {
   cursor: not-allowed;
 }
 
-/* 动画 */
+/* 动画效果 */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes success-pulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 rgba(66, 184, 131, 0); }
-  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(66, 184, 131, 0.6); }
-  100% { transform: scale(1); box-shadow: 0 0 0 rgba(66, 184, 131, 0); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(66, 184, 131, 0);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(66, 184, 131, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(66, 184, 131, 0);
+  }
 }
 
 @keyframes shake-animation {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .animate-fade-in {
@@ -344,24 +429,32 @@ onMounted(() => {
   animation: shake-animation 0.5s ease-in-out;
 }
 
-@media (max-width: 576px) {
+/* 多断点优化 */
+@media (max-width: 768px) {
   .login-card {
-    padding: 36px 24px;
-    max-width: 340px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    max-height: 90vh; /* 平板增大最大高度 */
   }
-  
-  .login-title {
-    font-size: 20px;
+}
+
+@media (max-width: 576px) {
+  .login-container {
+    padding: 10px;
   }
-  
-  .form-input {
-    height: 46px;
-    font-size: 14px;
+
+  .login-card {
+    border-radius: 16px;
+    max-height: 92vh; /* 手机进一步增大最大高度 */
   }
-  
-  .login-btn {
-    height: 48px;
-    font-size: 15px;
+}
+
+@media (max-width: 360px) {
+  .brand-logo {
+    margin-bottom: 16px;
+  }
+
+  .input-group {
+    padding: 0 10px;
   }
 }
 </style>

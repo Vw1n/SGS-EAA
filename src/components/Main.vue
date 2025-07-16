@@ -1,226 +1,12 @@
-<template>
-  <!-- 模板内容不变，仅修改样式 -->
-  <div class="product-selection-container">
-    <div class="product-card">
-      <!-- 产品选择标题 -->
-      <h3 class="card-title">
-        Please select the product category for EAA Directive
-      </h3>
-
-      <!-- 产品下拉选择区 -->
-      <div class="form-group">
-        <el-select
-          v-model="value"
-          placeholder="Product Category"
-          size="large"
-          class="custom-select"
-        >
-          <el-option-group
-            v-for="group in options"
-            :key="group.label"
-            :label="group.label"
-          >
-            <el-option
-              v-for="item in group.options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-option-group>
-          <template #footer>如找不到对应类别，请联系Ryan Yang报价</template>
-        </el-select>
-      </div>
-
-      <div class="link-number">
-        <el-input
-          v-if="value === 'Website'"
-          v-model="linkNum"
-          style="width: 300px"
-          placeholder="输入Link数量"
-        />
-      </div>
-
-      <!-- 移动端支持复选框 -->
-      <div class="mobile-support-option" v-if="value">
-        <div v-if="osHight" class="os-hint red-highlight">
-          提醒：所选产品除本体支持安装Apps外，还有可能支持移动端Apps控制场景。
-        </div>
-        <el-checkbox
-          v-model="showOsSelection"
-          label="是否支持移动端"
-          size="large"
-          class="os-checkbox"
-        />
-      </div>
-
-      <!-- 移动端操作系统选择区 -->
-      <div v-if="showOsSelection" class="os-selection animate-fade-in">
-        <h4 class="section-title">
-          如支持移动端Apps，请勾选Apps安装在移动端的操作系统：
-        </h4>
-        <div class="checkbox-group">
-          <el-checkbox
-            v-model="checked1"
-            label="IOS"
-            size="large"
-            class="custom-checkbox"
-          />
-          <el-checkbox
-            v-model="checked2"
-            label="Android"
-            size="large"
-            class="custom-checkbox"
-          />
-          <el-checkbox
-            v-model="checked3"
-            label="Others"
-            size="large"
-            class="custom-checkbox"
-          />
-          <el-input
-            v-if="checked3"
-            v-model="inputOS"
-            style="width: 120px"
-            placeholder="输入系统名称"
-          />
-        </div>
-        <el-input
-          v-if="showOsSelection"
-          v-model="appNum"
-          style="width: 400px"
-          placeholder="输入app数量"
-        />
-      </div>
-
-      <!-- 适用条款区 -->
-      <div v-if="Clause.length" class="clause-section-wrapper">
-        <div class="section-header">
-          <h4 class="section-title">Test Clause</h4>
-          <button class="toggle-btn" @click="showClause = !showClause">
-            {{ showClause ? "隐藏" : "显示" }}
-          </button>
-        </div>
-        <div v-if="showClause" class="clause-section animate-fade-in">
-          <div class="red-alert-wrapper">
-            <div class="red-alert-text">
-              SGS EAA Lab only evaluates the requirements in Table ZB.1 of the
-              EN 301 549.
-            </div>
-            <div
-              class="red-alert-text"
-              v-if="
-                value == 'Smart Phone' ||
-                value == 'Smart Watch' ||
-                value == 'Tablet/Pad'
-              "
-            >
-              This quotation does not include the HAC tests.
-            </div>
-          </div>
-          <el-checkbox-group
-            class="checkbox-group clause-checkboxes"
-            v-model="clausechecked"
-          >
-            <el-checkbox
-              v-for="(item, index) in Clause"
-              :key="index"
-              :label="item"
-              class="custom-checkbox clause-checkbox-item"
-              :title="titleMap[item]"
-              checked="true"
-            >
-              <div class="clause-item">
-                <span class="clause-label">{{ item }}</span>
-              </div>
-            </el-checkbox>
-          </el-checkbox-group>
-        </div>
-      </div>
-
-      <!-- 周期区域 -->
-      <div v-if="value" class="cycle-section-wrapper">
-        <div class="section-header">
-          <h4 class="section-title">Lead Time(Working Days)</h4>
-          <button class="toggle-btn" @click="showLeadTime = !showLeadTime">
-            {{ showLeadTime ? "隐藏" : "显示" }}
-          </button>
-        </div>
-        <div v-if="showLeadTime" class="animate-fade-in cycle-section">
-          <div class="cycle-content">
-            <div class="cycle-item">
-              <span class="cycle-label">Wave #1: Release Hight Risk Items</span>
-              <span class="cycle-value">{{ Time[0] }} Working Days</span>
-            </div>
-            <div class="cycle-item">
-              <span class="cycle-label">Wave #1: Release Full Test Items</span>
-              <span class="cycle-value">{{ Time[1] }} Working Days</span>
-            </div>
-            <div class="cycle-item">
-              <span class="cycle-label"
-                >Wave #2: Release Test Report + VoC</span
-              >
-              <span class="cycle-value">{{ Time[2] }} Working Days</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 测试样本区域 -->
-      <div v-if="value" class="test-samples-section-wrapper">
-        <div class="section-header">
-          <div class="section-title">Test Sample(Unit)</div>
-          <button class="toggle-btn" @click="showTestSample = !showTestSample">
-            {{ showTestSample ? "隐藏" : "显示" }}
-          </button>
-        </div>
-        <div v-if="showTestSample" class="test-samples-section">
-          <div class="test-samples-group">
-            <div class="sample-quantity">
-              Sample Quantity
-              <span class="quantity-value">{{ quantity }}</span>
-            </div>
-            <el-checkbox
-              v-model="checked4"
-              label="是否支持RTT"
-              size="large"
-              class="sample-checkbox"
-            />
-            <el-checkbox
-              v-model="checked5"
-              label="是否支持HAC"
-              size="large"
-              class="sample-checkbox"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- 费用展示区 -->
-      <div class="cost-section-wrapper">
-        <div class="section-header">
-          <h4 class="section-title">Quotation(CNY,Not includingVAT)</h4>
-          <button class="toggle-btn" @click="showQuotation = !showQuotation">
-            {{ showQuotation ? "隐藏" : "显示" }}
-          </button>
-        </div>
-        <div v-if="showQuotation" class="cost-section animate-fade-in">
-          <div class="cost-display">¥{{ cost.toLocaleString() }} (CNY)</div>
-        </div>
-      </div>
-    </div>
-    <div class="export-section">
-      <ExportButton :isDisabled="!value" @export="handleExport" />
-    </div>
-  </div>
-  <logout />
-</template>
-
 <script setup>
-// 脚本部分不变
 import { ref, computed } from "vue";
 import Logout from "./Logout.vue";
 import ExportButton from "./ExportButton.vue";
 import { exportJsonToExcel } from "../utils/excel-export";
+import Head from "./Head.vue";
+import { useAuthStore } from '../stores/authStore'
+
+const authStore = useAuthStore();
 
 // 控制各区块显示/隐藏的状态（默认显示）
 const showClause = ref(true);
@@ -235,10 +21,9 @@ const options = [
     label: "===EAA Product产品===",
     options: [
       { value: "All in One(AIO)", label: "All in One(AIO)" },
-      { value: "ATM", label: "ATM" },
+      { value: "ATM/POS", label: "ATM/POS" },
       { value: "Camera", label: "Camera" },
       { value: "Tablet/Pad", label: "Tablet/Pad" },
-      { value: "POS", label: "POS" },
       { value: "Projector(with OS)", label: "Projector(with OS)" },
       { value: "Telephone", label: "Telephone" },
       { value: "Router/CPE/AP/Gateway", label: "Router/CPE/AP/Gateway" },
@@ -270,20 +55,22 @@ const osHightMap = {
 const osHight = computed(() => osHightMap[value.value] || false);
 
 // 移动端操作系统选择器
-const checked1 = ref(false);
-const checked2 = ref(false);
-const checked3 = ref(false);
+const checkedIOS = ref(false);
+const checkedAndroid = ref(false);
+const checkedOthers = ref(false);
+const checkedWindows = ref(false);
+const checkedMac = ref(false);
 const showOsSelection = ref(false);
 
-const checked4 = ref(false);
-const checked5 = ref(false);
+const checkedRTT = ref(false);
+const checkedHAC = ref(false);
 const quantity = computed(() => {
   let quantity = 3;
-  if (checked4.value) quantity += 2;
-  if (checked5.value) quantity += 1;
+  if (checkedRTT.value) quantity += 2;
+  if (checkedHAC.value) quantity += 1;
   return quantity;
 });
-const clausechecked = ref([]);
+const clausechecked = true;
 
 const inputOS = ref("");
 const appNum = ref(null);
@@ -299,7 +86,7 @@ const clauseMap = {
     "Clause 11",
     "Clause 12",
   ],
-  ATM: ["Clause 5", "Clause 8", "Clause 10", "Clause 11", "Clause 12"],
+  "ATM/POS": ["Clause 5", "Clause 8", "Clause 10", "Clause 11", "Clause 12"],
   Camera: [
     "Clause 5",
     "Clause 7",
@@ -317,7 +104,6 @@ const clauseMap = {
     "Clause 11",
     "Clause 12",
   ],
-  POS: ["Clause 5", "Clause 8", "Clause 10", "Clause 11", "Clause 12"],
   "Projector(with OS)": [
     "Clause 5",
     "Clause 7",
@@ -408,10 +194,9 @@ const osPriceMap = { IOS: 10000, Android: 10000, Others: 10000 };
 // 价格映射
 const priceMap = {
   "All in One(AIO)": 72000,
-  ATM: 62000,
+  "ATM/POS": 62000,
   Camera: 92000,
-  Pad: 72000,
-  POS: 62000,
+  "Tablet/Pad": 72000,
   "Projector(with OS)": 92000,
   Telephone: 82000,
   "Router/CPE/AP/Gateway": 72000,
@@ -420,16 +205,15 @@ const priceMap = {
   "Smart Phone": 72000,
   "Smart Watch": 72000,
   Television: 92000,
-  Website: 0,
+  "Website(s)": 0,
 };
 
 // 周期映射
 const TimeMap = {
   "All in One(AIO)": [10, 10, 3],
-  ATM: [10, 7, 3],
+  "ATM/POS": [10, 7, 3],
   Camera: [10, 10, 3],
-  Pad: [19, 11, 3],
-  POS: [10, 7, 3],
+  "Tablet/Pad": [19, 11, 3],
   "Projector(with OS)": [10, 10, 3],
   Telephone: [10, 7, 3],
   "Router/CPE/AP/Gateway": [15, 5, 3],
@@ -438,17 +222,19 @@ const TimeMap = {
   "Smart Phone": [20, 10, 3],
   "Smart Watch": [10, 10, 3],
   Television: [15, 5, 3],
-  Website: [10, 10, 3],
+  "Website(s)": [10, 10, 3],
 };
 const Time = computed(() => TimeMap[value.value] || []);
 
 // 计算最终费用
 const cost = computed(() => {
   let totalCost = 0;
-  if (showOsSelection.value) {
-    if (checked1.value) totalCost += osPriceMap["IOS"];
-    if (checked2.value) totalCost += osPriceMap["Android"];
-    if (checked3.value) totalCost += osPriceMap["Others"];
+  if (showOsSelection.value || value.value == "Website(s)") {
+    if (checkedWindows.value) totalCost += osPriceMap["IOS"];
+    if (checkedMac.value) totalCost += osPriceMap["Android"];
+    if (checkedIOS.value) totalCost += osPriceMap["IOS"];
+    if (checkedAndroid.value) totalCost += osPriceMap["Android"];
+    if (checkedOthers.value) totalCost += osPriceMap["Others"];
   }
   if (value.value) totalCost += priceMap[value.value];
   if (linkNum.value) totalCost += linkNum.value * 500;
@@ -460,9 +246,9 @@ const cost = computed(() => {
 const getSelectedOS = () => {
   if (!showOsSelection.value) return "无";
   const osList = [];
-  if (checked1.value) osList.push("IOS");
-  if (checked2.value) osList.push("Android");
-  if (checked3.value) osList.push("Others");
+  if (checkedIOS.value) osList.push("IOS");
+  if (checkedAndroid.value) osList.push("Android");
+  if (checkedOthers.value) osList.push("Others");
   return osList.length ? osList.join(", ") : "无";
 };
 
@@ -496,7 +282,7 @@ const handleExport = () => {
     { 项目: "", 信息: "" },
     { 项目: "测试样品", 信息: "数量" },
     { 项目: "正常样机（附件出厂配件）", 信息: `2` },
-    { 项目: "RTT 样机", 信息: checked4.value ? "3" : "0" },
+    { 项目: "RTT 样机", 信息: checkedRTT.value ? "3" : "0" },
     { 项目: "", 信息: "" },
     { 项目: "启动测试需要提供资料", 信息: "备注" },
     {
@@ -517,221 +303,660 @@ const handleExport = () => {
   );
 };
 </script>
+<template>
+  <Head />
+  <div class="product-selection-container">
+    <div class="product-card">
+      <!-- 产品选择标题 -->
+      <h3 class="card-title">
+        Please select the product category for EAA Directive
+      </h3>
 
+      <!-- 产品下拉选择区 -->
+      <div class="form-group">
+        <el-select
+          v-model="value"
+          placeholder="Product Category"
+          size="large"
+          class="custom-select"
+        >
+          <el-option-group
+            v-for="group in options"
+            :key="group.label"
+            :label="group.label"
+          >
+            <el-option
+              v-for="item in group.options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-option-group>
+          <template #footer>如找不到对应类别，请联系Ryan Yang报价</template>
+        </el-select>
+      </div>
+
+      <div class="link-number">
+        <el-input
+          v-if="value === 'Website'"
+          v-model="linkNum"
+          style="width: 300px"
+          placeholder="输入Link数量"
+        />
+      </div>
+      <!-- 移动端支持 -->
+      <div
+        v-if="
+          value == 'Smart Phone' ||
+          value == 'Smart Watch' ||
+          value == 'Tablet/Pad'
+        "
+      >
+        <h4 class="section-title">请输入主体app数量</h4>
+        <el-input
+          v-model="appNum"
+          style="width: 400px"
+          placeholder="输入app数量"
+        />
+      </div>
+      <div v-else-if="value != 'Website(s)'">
+        <!-- 移动端支持复选框 -->
+        <div class="mobile-support-option" v-if="value">
+          <div v-if="osHight" class="os-hint red-highlight">
+            提醒：所选产品除本体支持安装Apps外，还有可能支持移动端Apps控制场景。
+          </div>
+          <el-checkbox
+            v-model="showOsSelection"
+            label="是否支持移动端"
+            size="large"
+            class="os-checkbox"
+          />
+        </div>
+        <!-- 移动端操作系统选择区 -->
+        <div v-if="showOsSelection" class="os-selection animate-fade-in">
+          <h4 class="section-title">
+            如支持移动端Apps，请勾选Apps安装在移动端的操作系统：
+          </h4>
+          <div class="checkbox-group">
+            <el-checkbox
+              v-model="checkedIOS"
+              label="IOS"
+              size="large"
+              class="custom-checkbox"
+            />
+            <el-checkbox
+              v-model="checkedAndroid"
+              label="Android"
+              size="large"
+              class="custom-checkbox"
+            />
+            <el-checkbox
+              v-model="checkedOthers"
+              label="Others"
+              size="large"
+              class="custom-checkbox"
+            />
+            <el-input
+              v-if="checkedOthers"
+              v-model="inputOS"
+              style="width: 120px"
+              placeholder="输入系统名称"
+            />
+          </div>
+          <el-input
+            v-if="showOsSelection"
+            v-model="appNum"
+            style="width: 400px"
+            placeholder="输入app数量"
+          />
+        </div>
+      </div>
+      <div v-else>
+        <div class="mobile-support-option" v-if="value">
+          <h4 class="section-title">请勾选Website(s)适配的操作系统：</h4>
+          <div class="checkbox-group">
+            <el-checkbox
+              v-model="checkedWindows"
+              label="Windows"
+              size="large"
+              class="custom-checkbox"
+            />
+            <el-checkbox
+              v-model="checkedMac"
+              label="Mac OS"
+              size="large"
+              class="custom-checkbox"
+            />
+            <el-checkbox
+              v-model="checkedIOS"
+              label="IOS"
+              size="large"
+              class="custom-checkbox"
+            />
+            <el-checkbox
+              v-model="checkedAndroid"
+              label="Android"
+              size="large"
+              class="custom-checkbox"
+            />
+            <el-checkbox
+              v-model="checkedOthers"
+              label="Others"
+              size="large"
+              class="custom-checkbox"
+            />
+            <el-input
+              v-if="checkedOthers"
+              v-model="inputOS"
+              style="width: 120px"
+              placeholder="输入系统名称"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- 适用条款区 -->
+      <div v-if="Clause.length" class="clause-section-wrapper">
+        <div class="section-header">
+          <h4 class="section-title">Test Clause</h4>
+          <button class="toggle-btn" @click="showClause = !showClause">
+            {{ showClause ? "隐藏" : "显示" }}
+          </button>
+        </div>
+        <div v-if="showClause" class="clause-section animate-fade-in">
+          <div class="red-alert-wrapper">
+            <div class="red-alert-text">
+              SGS EAA Lab only evaluates the requirements in Table ZB.1 of the
+              EN 301 549.
+            </div>
+            <div
+              class="red-alert-text"
+              v-if="
+                value == 'Smart Phone' ||
+                value == 'Smart Watch' ||
+                value == 'Tablet/Pad'
+              "
+            >
+              This quotation does not include the HAC tests.
+            </div>
+          </div>
+          <el-checkbox-group
+            class="checkbox-group clause-checkboxes"
+            v-model="clausechecked"
+          >
+            <el-checkbox
+              v-for="(item, index) in Clause"
+              :key="index"
+              :label="item"
+              class="custom-checkbox clause-checkbox-item"
+              :title="titleMap[item]"
+              checked="true"
+            >
+              <div class="clause-item">
+                <span class="clause-label">{{ item }}</span>
+              </div>
+            </el-checkbox>
+          </el-checkbox-group>
+        </div>
+      </div>
+
+      <!-- 周期区域 -->
+      <div v-if="value" class="cycle-section-wrapper">
+        <div class="section-header">
+          <h4 class="section-title">Lead Time(Working Days)</h4>
+          <button class="toggle-btn" @click="showLeadTime = !showLeadTime">
+            {{ showLeadTime ? "隐藏" : "显示" }}
+          </button>
+        </div>
+        <div v-if="showLeadTime" class="animate-fade-in cycle-section">
+          <div class="cycle-content">
+            <div class="cycle-item">
+              <span class="cycle-label">Wave #1: Release Hight Risk Items</span>
+              <span class="cycle-value">{{ Time[0] }} </span>
+              <span class="cycle-label">Working Days</span>
+            </div>
+            <div class="cycle-item">
+              <span class="cycle-label">Wave #1: Release Full Test Items</span>
+              <span class="cycle-value">{{ Time[1] }} </span>
+              <span class="cycle-label">Working Days</span>
+            </div>
+            <div class="cycle-item">
+              <span class="cycle-label"
+                >Wave #2: Release Test Report + VoC</span
+              >
+              <span class="cycle-value">{{ Time[2] }} </span>
+              <span class="cycle-label">Working Days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 测试样本区域 -->
+      <div v-if="value" class="test-samples-section-wrapper">
+        <div class="section-header">
+          <h4 class="section-title">Test Sample(Unit)</h4>
+          <button class="toggle-btn" @click="showTestSample = !showTestSample">
+            {{ showTestSample ? "隐藏" : "显示" }}
+          </button>
+        </div>
+        <div v-if="showTestSample" class="test-samples-section">
+          <div class="test-samples-group">
+            <div class="sample-quantity">
+              Sample Quantity
+              <span class="quantity-value">{{ quantity }}</span>
+            </div>
+            <div v-if="value == 'Smart Phone' || value == 'Smart Watch'">
+              <el-checkbox
+                v-model="checkedRTT"
+                label="是否支持RTT"
+                size="large"
+                class="sample-checkbox"
+              />
+              <el-checkbox
+                v-model="checkedHAC"
+                label="是否支持HAC"
+                size="large"
+                class="sample-checkbox"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 费用展示区 -->
+      <div class="cost-section-wrapper" v-if="authStore.auth == 'inner'">
+        <div>authStore.auth</div>
+        <div class="section-header">
+          <h4 class="section-title">Quotation(CNY,Not includingVAT)</h4>
+          <button class="toggle-btn" @click="showQuotation = !showQuotation">
+            {{ showQuotation ? "隐藏" : "显示" }}
+          </button>
+        </div>
+        <div v-if="showQuotation" class="cost-section animate-fade-in">
+          <div class="cost-display">¥{{ cost.toLocaleString() }} (CNY)</div>
+        </div>
+      </div>
+    </div>
+    <div class="export-section">
+      <ExportButton :isDisabled="!value" @export="handleExport" />
+    </div>
+  </div>
+  <logout />
+</template>
 <style scoped>
-/* 紧凑布局核心调整：减少各类间距 */
+/* 基础样式重置与核心变量 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 容器布局 */
 .product-selection-container {
   max-width: 700px;
   margin: 0 auto;
-  padding: 10px; /* 减少外层容器内边距 */
+  padding: 15px;
 }
 
 .product-card {
-  background-color: #ffffff;
+  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 15px; /* 减少卡片内边距 */
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
 }
 
-/* 区块容器间距调整 */
-.clause-section-wrapper,
-.cycle-section-wrapper,
-.test-samples-section-wrapper,
-.cost-section-wrapper {
-  margin: 10px 0; /* 减少区块间垂直间距 */
+/* 标题样式 */
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(237, 109, 45, 0.2);
+  text-align: center;
 }
 
-/* 标题栏与内容间距 */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px; /* 缩小标题与内容间距 */
-}
-
-/* 表单区域间距 */
+/* 表单区域 */
 .form-group {
-  margin-bottom: 15px; /* 减少表单底部间距 */
+  margin-bottom: 20px;
 }
 
-/* 内容区内边距调整 */
-.clause-section,
-.cycle-section,
-.test-samples-section,
-.cost-section {
-  padding: 12px; /* 减少内容区内部填充 */
-  border-radius: 8px;
+.custom-select {
+  width: 100%;
 }
 
-/* 移动端支持选项 */
+/* 链接数量输入区 */
+.link-number {
+  margin-bottom: 20px;
+}
+
+/* 移动端支持选项区 */
 .mobile-support-option {
-  padding: 10px; /* 减少内边距 */
-  margin: 8px 0; /* 减少外边距 */
+  padding: 15px;
+  margin: 15px 0;
   border-radius: 8px;
-  background-color: #fcfcfc;
-  border: 1px solid #f0f0f0;
+  background: #fff;
+  border: 1px solid rgba(237, 109, 45, 0.2);
 }
 
 .os-hint.red-highlight {
-  color: #f53f3f;
-  font-size: 13px; /* 略小字体 */
-  line-height: 1.4;
-  margin: 8px 0; /* 减少上下间距 */
-  padding: 6px 10px; /* 减少内边距 */
-  border-left: 3px solid #f53f3f;
-  background-color: #fff1f0;
+  color: #ed6d2d;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 10px 0;
+  padding: 8px 12px;
+  border-left: 3px solid #ed6d2d;
+  background: rgba(237, 109, 45, 0.05);
   border-radius: 0 4px 4px 0;
-  font-weight: 500;
 }
 
-/* 复选框组间距 */
+/* 操作系统选择区 */
+.os-selection {
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(237, 109, 45, 0.1);
+}
+
+/* 复选框组样式 */
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 15px; /* 减少复选框间间距 */
-  padding: 3px 0;
+  gap: 10px 15px;
+  padding: 10px 0;
   align-items: center;
 }
 
 .custom-checkbox {
   flex: 0 0 auto;
-  min-width: 100px; /* 缩小复选框最小宽度 */
-  padding: 3px 0;
+  min-width: 100px;
+  padding: 5px 0;
   display: flex;
   align-items: center;
+  cursor: pointer;
+}
+
+/* 区块标题样式（统一各部分标题） */
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ed6d2d;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: rgba(237, 109, 45, 0.1);
+  display: inline-block;
+}
+
+/* 区块头部（标题+按钮） */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: rgba(237, 109, 45, 0.05);
+  border-bottom: 1px solid rgba(237, 109, 45, 0.1);
+}
+
+/* 切换按钮样式 */
+.toggle-btn {
+  background: rgba(237, 109, 45, 0.1);
+  border: 1px solid #ed6d2d;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #ed6d2d;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  background: #ed6d2d;
+  color: #fff;
+}
+
+/* 条款区域 */
+.clause-section-wrapper,
+.cycle-section-wrapper,
+.test-samples-section-wrapper,
+.cost-section-wrapper {
+  margin: 15px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(237, 109, 45, 0.2);
+}
+
+.clause-section,
+.cycle-section,
+.test-samples-section,
+.cost-section {
+  padding: 15px;
+  background: #fff;
 }
 
 /* 条款项样式 */
 .clause-item {
-  background-color: #f7f7f7;
-  padding: 6px 10px; /* 减少内边距 */
+  background: rgba(237, 109, 45, 0.05);
+  padding: 6px 12px;
   border-radius: 6px;
-  font-size: 13px; /* 略小字体 */
-  color: #444;
+  font-size: 13px;
+  color: #333;
   transition: all 0.2s ease;
-  width: 100px; /* 缩小条款项宽度 */
+  width: 100px;
 }
 
-/* 红色提示文本 */
+.clause-item:hover {
+  background: rgba(237, 109, 45, 0.1);
+}
+
+/* 红色提示文本（统一为主题色） */
+.red-alert-wrapper {
+  margin-bottom: 15px;
+}
+
 .red-alert-text {
-  color: #f53f3f;
+  color: #ed6d2d;
   font-size: 12px;
-  line-height: 1.4;
-  margin-top: 8px; /* 减少顶部间距 */
-  padding-left: 4px;
+  line-height: 1.5;
+  margin: 0 0 8px 0;
+  padding-left: 6px;
   font-weight: 500;
-  border-left: 2px solid #ffccc7;
+  border-left: 2px solid rgba(237, 109, 45, 0.2);
 }
 
 /* 周期项样式 */
 .cycle-content {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* 减少周期项间距 */
+  gap: 10px;
 }
 
 .cycle-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 8px; /* 减少内边距 */
+  padding: 10px 12px;
   border-radius: 6px;
-  transition: background-color 0.2s ease;
+  background: rgba(237, 109, 45, 0.05);
 }
 
 .cycle-label {
-  font-size: 13px; /* 略小字体 */
+  font-size: 13px;
   color: #333;
-  font-weight: 500;
+  flex: 1;
 }
 
 .cycle-value {
-  font-size: 14px; /* 略小字体 */
-  color: #007bff;
+  font-size: 14px;
+  color: #ed6d2d;
   font-weight: 600;
-  padding-left: 10px;
+  padding: 0 10px;
+  min-width: 40px;
+  text-align: center;
 }
 
 /* 测试样本区域 */
 .test-samples-group {
   display: flex;
   align-items: center;
-  gap: 15px; /* 减少元素间距 */
+  flex-wrap: wrap;
+  gap: 15px;
   padding: 5px 0;
 }
 
 .sample-quantity {
   display: flex;
   align-items: center;
-  font-size: 13px; /* 略小字体 */
+  font-size: 13px;
   color: #333;
-  padding-left: 10px;
-  border-left: 1px solid #e5e5e5;
+  padding-left: 12px;
+  border-left: 1px solid rgba(237, 109, 45, 0.2);
   flex: 1;
+  min-width: 200px;
 }
 
-/* 费用显示 */
-.cost-display {
-  font-size: 24px; /* 略小字体 */
+.quantity-value {
+  color: #ed6d2d;
   font-weight: 600;
-  color: #007bff;
-  padding: 10px; /* 减少内边距 */
-  background-color: #f0f8ff;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+/* 费用显示区 */
+.cost-display {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ed6d2d;
+  padding: 12px;
+  background: rgba(237, 109, 45, 0.05);
   border-radius: 8px;
+  text-align: center;
+  border: 1px solid rgba(237, 109, 45, 0.1);
+}
+
+/* 导出按钮区域 */
+.export-section {
+  margin: 20px 0;
   text-align: center;
 }
 
-/* 标题字体大小调整 */
-.card-title {
-  font-size: 20px; /* 缩小标题字体 */
-  font-weight: 600;
-  color: #333;
-  border-bottom: 2px solid #f0f0f0;
-  padding-bottom: 8px; /* 减少标题底部填充 */
-  margin: 0 0 10px 0; /* 减少标题底部间距 */
-}
-
-.section-title {
-  font-size: 16px; /* 缩小区块标题 */
-  font-weight: 500;
-  color: #555;
-  margin: 0;
-}
-
-/* 按钮样式微调 */
-.toggle-btn {
-  background-color: #f0f2f5;
-  border: none;
-  border-radius: 4px;
-  padding: 3px 6px; /* 减少按钮内边距 */
-  font-size: 12px;
-  cursor: pointer;
-  color: #666;
-  transition: all 0.2s ease;
-}
-
 /* 响应式优化 */
-@media (max-width: 576px) {
-  .product-card {
-    padding: 10px; /* 移动端进一步减少内边距 */
+@media (max-width: 768px) {
+  .product-selection-container {
+    padding: 8px;
   }
 
-  .clause-section,
-  .cycle-section,
-  .test-samples-section,
-  .cost-section {
-    padding: 8px; /* 移动端内容区更少内边距 */
+  .product-card {
+    padding: 12px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+
+  .section-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .section-title {
+    width: 100%;
+    margin-bottom: 5px;
+    text-align: left;
+  }
+
+  .toggle-btn {
+    margin-left: auto;
   }
 
   .checkbox-group {
-    gap: 6px 10px; /* 移动端复选框间距更小 */
+    gap: 8px;
   }
 
+  .custom-checkbox {
+    min-width: auto;
+    flex: 1 0 45%;
+  }
+
+  .clause-item {
+    width: 100%;
+  }
+
+  /* 周期项在小屏幕垂直排列 */
   .cycle-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 3px;
+    gap: 5px;
+    padding: 10px;
+  }
+
+  .cycle-value {
+    padding: 0;
+    align-self: flex-end;
+  }
+
+  /* 测试样本区域垂直排列 */
+  .test-samples-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .sample-quantity {
+    border-left: none;
+    padding-left: 0;
+    margin-bottom: 5px;
+    min-width: 100%;
+  }
+
+  /* 输入框自适应宽度 */
+  .el-input {
+    width: 100% !important;
+  }
+
+  .cost-display {
+    font-size: 20px;
+    padding: 10px;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 480px) {
+  .custom-checkbox {
+    flex: 1 0 100%;
+  }
+
+  .cycle-label {
+    font-size: 12px;
+  }
+
+  .clause-item {
+    width: 100%;
+  }
+
+  .section-title {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}
+
+/* 动画效果优化 */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
