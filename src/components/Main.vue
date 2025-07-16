@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import Logout from "./Logout.vue";
 import ExportButton from "./ExportButton.vue";
 import { exportJsonToExcel } from "../utils/excel-export";
@@ -23,15 +23,16 @@ const options = [
       { value: "All in One(AIO)", label: "All in One(AIO)" },
       { value: "ATM/POS", label: "ATM/POS" },
       { value: "Camera", label: "Camera" },
-      { value: "Tablet/Pad", label: "Tablet/Pad" },
-      { value: "Projector(with OS)", label: "Projector(with OS)" },
-      { value: "Telephone", label: "Telephone" },
+      { value: "Projector", label: "Projector" },
       { value: "Router/CPE/AP/Gateway", label: "Router/CPE/AP/Gateway" },
       { value: "Set-top Box", label: "Set-top Box" },
       { value: "Smart Home Devices", label: "Smart Home Devices" },
       { value: "Smart Phone", label: "Smart Phone" },
       { value: "Smart Watch", label: "Smart Watch" },
+      { value: "Tablet/Pad", label: "Tablet/Pad" },
       { value: "Television", label: "Television" },
+      { value: "Telephone", label: "Telephone" },
+      { value: "Treadmill", label: "Treadmill" },
     ],
   },
   {
@@ -60,7 +61,7 @@ const checkedAndroid = ref(false);
 const checkedOthers = ref(false);
 const checkedWindows = ref(false);
 const checkedMac = ref(false);
-const showOsSelection = computed(() => value.value == "Mobile App(s)");
+const showOsSelection = ref(false);
 
 const checkedRTT = ref(false);
 const checkedHAC = ref(false);
@@ -104,7 +105,7 @@ const clauseMap = {
     "Clause 11",
     "Clause 12",
   ],
-  "Projector(with OS)": [
+  Projector: [
     "Clause 5",
     "Clause 7",
     "Clause 8",
@@ -137,6 +138,14 @@ const clauseMap = {
     "Clause 12",
   ],
   "Smart Home Devices": [
+    "Clause 5",
+    "Clause 7",
+    "Clause 8",
+    "Clause 10",
+    "Clause 11",
+    "Clause 12",
+  ],
+  "Treadmill": [
     "Clause 5",
     "Clause 7",
     "Clause 8",
@@ -195,13 +204,14 @@ const osPriceMap = { IOS: 10000, Android: 10000, Others: 10000 };
 const priceMap = {
   "All in One(AIO)": 72000,
   "ATM/POS": 62000,
-  Camera: 92000,
+  Camera: 72000,
   "Tablet/Pad": 72000,
-  "Projector(with OS)": 92000,
+  Projector: 72000,
   Telephone: 82000,
-  "Router/CPE/AP/Gateway": 72000,
-  "Set-top Box": 92000,
-  "Smart Home Devices": 92000,
+  "Router/CPE/AP/Gateway": 52000,
+  "Set-top Box": 72000,
+  "Smart Home Devices": 72000,
+  Treadmill: 72000,
   "Smart Phone": 72000,
   "Smart Watch": 72000,
   Television: 92000,
@@ -213,15 +223,16 @@ const TimeMap = {
   "All in One(AIO)": [10, 10, 3],
   "ATM/POS": [10, 7, 3],
   Camera: [10, 10, 3],
-  "Tablet/Pad": [20, 10, 3],
-  "Projector(with OS)": [10, 10, 3],
-  Telephone: [10, 7, 3],
+  Projector: [10, 10, 3],
   "Router/CPE/AP/Gateway": [15, 5, 3],
   "Set-top Box": [15, 5, 3],
   "Smart Home Devices": [10, 10, 3],
   "Smart Phone": [20, 10, 3],
   "Smart Watch": [10, 10, 3],
+  "Tablet/Pad": [20, 10, 3],
   Television: [15, 5, 3],
+  Telephone: [10, 7, 3],
+  Treadmill: [10, 10, 3],
   "Website(s)": [10, 10, 3],
 };
 const Time = computed(() => TimeMap[value.value] || []);
