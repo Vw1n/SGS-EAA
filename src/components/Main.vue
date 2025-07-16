@@ -4,7 +4,7 @@ import Logout from "./Logout.vue";
 import ExportButton from "./ExportButton.vue";
 import { exportJsonToExcel } from "../utils/excel-export";
 import Head from "./Head.vue";
-import { useAuthStore } from '../stores/authStore'
+import { useAuthStore } from "../stores/authStore";
 
 const authStore = useAuthStore();
 
@@ -18,7 +18,7 @@ const showQuotation = ref(true);
 const value = ref(null);
 const options = [
   {
-    label: "===EAA Product产品===",
+    label: "====================EAA Product产品====================",
     options: [
       { value: "All in One(AIO)", label: "All in One(AIO)" },
       { value: "ATM/POS", label: "ATM/POS" },
@@ -35,7 +35,7 @@ const options = [
     ],
   },
   {
-    label: "===EAA Services服务===",
+    label: "====================EAA Services服务====================",
     options: [
       { value: "Website(s)", label: "Website(s)" },
       { value: "Mobile App(s)", label: "Mobile App(s)" },
@@ -60,13 +60,13 @@ const checkedAndroid = ref(false);
 const checkedOthers = ref(false);
 const checkedWindows = ref(false);
 const checkedMac = ref(false);
-const showOsSelection = ref(false);
+const showOsSelection = computed(() => value.value == "Mobile App(s)");
 
 const checkedRTT = ref(false);
 const checkedHAC = ref(false);
 const quantity = computed(() => {
-  let quantity = 3;
-  if (checkedRTT.value) quantity += 2;
+  let quantity = 2;
+  if (checkedRTT.value) quantity += 3;
   if (checkedHAC.value) quantity += 1;
   return quantity;
 });
@@ -213,7 +213,7 @@ const TimeMap = {
   "All in One(AIO)": [10, 10, 3],
   "ATM/POS": [10, 7, 3],
   Camera: [10, 10, 3],
-  "Tablet/Pad": [19, 11, 3],
+  "Tablet/Pad": [20, 10, 3],
   "Projector(with OS)": [10, 10, 3],
   Telephone: [10, 7, 3],
   "Router/CPE/AP/Gateway": [15, 5, 3],
@@ -338,7 +338,7 @@ const handleExport = () => {
 
       <div class="link-number">
         <el-input
-          v-if="value === 'Website'"
+          v-if="value === 'Website(s)'"
           v-model="linkNum"
           style="width: 300px"
           placeholder="输入Link数量"
@@ -375,7 +375,8 @@ const handleExport = () => {
         <!-- 移动端操作系统选择区 -->
         <div v-if="showOsSelection" class="os-selection animate-fade-in">
           <h4 class="section-title">
-            如支持移动端Apps，请勾选Apps安装在移动端的操作系统：
+            <span v-if="value != 'Mobile App(s)'">如支持移动端Apps，</span
+            >请勾选Apps安装在移动端的操作系统：
           </h4>
           <div class="checkbox-group">
             <el-checkbox
@@ -457,7 +458,7 @@ const handleExport = () => {
       <!-- 适用条款区 -->
       <div v-if="Clause.length" class="clause-section-wrapper">
         <div class="section-header">
-          <h4 class="section-title">Test Clause</h4>
+          <h4 class="section-title">1.Test Clause</h4>
           <button class="toggle-btn" @click="showClause = !showClause">
             {{ showClause ? "隐藏" : "显示" }}
           </button>
@@ -502,7 +503,7 @@ const handleExport = () => {
       <!-- 周期区域 -->
       <div v-if="value" class="cycle-section-wrapper">
         <div class="section-header">
-          <h4 class="section-title">Lead Time(Working Days)</h4>
+          <h4 class="section-title">2.Lead Time(Working Days)</h4>
           <button class="toggle-btn" @click="showLeadTime = !showLeadTime">
             {{ showLeadTime ? "隐藏" : "显示" }}
           </button>
@@ -533,7 +534,7 @@ const handleExport = () => {
       <!-- 测试样本区域 -->
       <div v-if="value" class="test-samples-section-wrapper">
         <div class="section-header">
-          <h4 class="section-title">Test Sample(Unit)</h4>
+          <h4 class="section-title">3.Test Sample(Unit)</h4>
           <button class="toggle-btn" @click="showTestSample = !showTestSample">
             {{ showTestSample ? "隐藏" : "显示" }}
           </button>
@@ -564,9 +565,8 @@ const handleExport = () => {
 
       <!-- 费用展示区 -->
       <div class="cost-section-wrapper" v-if="authStore.auth == 'inner'">
-        <div>authStore.auth</div>
         <div class="section-header">
-          <h4 class="section-title">Quotation(CNY,Not includingVAT)</h4>
+          <h4 class="section-title">4.Quotation(CNY,Not includingVAT)</h4>
           <button class="toggle-btn" @click="showQuotation = !showQuotation">
             {{ showQuotation ? "隐藏" : "显示" }}
           </button>
@@ -608,7 +608,7 @@ const handleExport = () => {
 .card-title {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: #ed6d2d;
   padding-bottom: 12px;
   margin-bottom: 20px;
   border-bottom: 2px solid rgba(237, 109, 45, 0.2);

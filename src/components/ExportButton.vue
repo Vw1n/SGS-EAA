@@ -17,7 +17,7 @@ import { defineProps, defineEmits } from 'vue'
 const props = defineProps({
   buttonType: {
     type: String,
-    default: 'primary'
+    default: 'warning'
   },
   buttonSize: {
     type: String,

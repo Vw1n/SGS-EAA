@@ -1,5 +1,5 @@
 <script setup>
-import { useAuthStore } from '../stores/authStore'
+import { useAuthStore } from "../stores/authStore";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
@@ -12,7 +12,11 @@ const password = ref("");
 const errorMessage = ref("");
 const loading = ref(false);
 const loginCard = ref(null);
-
+function validateString(str) {
+  // 使用正则表达式：^1 表示以1开头，\\d{10}$ 表示接下来是10个数字
+  const regex = /^1\d{10}$/;
+  return regex.test(str);
+}
 const handleLogin = async () => {
   errorMessage.value = "";
 
@@ -31,8 +35,7 @@ const handleLogin = async () => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 800));
     if (
-      (username.value === "ryan.yang@sgs.com" &&
-        password.value === "SGS0755") ||
+      (username.value === "SGS" && validateString(password.value)) ||
       (username.value === "123" && password.value === "123")
     ) {
       localStorage.setItem("token", "true");
@@ -81,7 +84,7 @@ onMounted(() => {
       <!-- 品牌标识 -->
       <div class="brand-logo">
         <i class="fa fa-shield-alt"></i>
-        <span class="brand-text">SGS EAA</span>
+        <span class="brand-text">SGS EAA Lab</span>
       </div>
       <div class="select-type" v-if="!clientShow && !innerShow">
         <el-button type="success" @click="changeClient">客户登录</el-button>
@@ -89,7 +92,7 @@ onMounted(() => {
       </div>
       <div v-if="innerShow">
         <!-- 标题 -->
-        <h1 class="login-title">登录</h1>
+        <h1 class="login-title">SGG 内部登录</h1>
 
         <!-- 错误提示 -->
         <div v-if="errorMessage" class="error-notification">
@@ -125,7 +128,7 @@ onMounted(() => {
               <input
                 v-model="password"
                 type="password"
-                placeholder="请输入密码"
+                placeholder="请输入手机号"
                 class="form-input"
                 required
               />
@@ -246,7 +249,7 @@ body {
   font-weight: 600;
   color: #303133;
 }
-.select-type{
+.select-type {
   display: flex;
   justify-content: center;
 }

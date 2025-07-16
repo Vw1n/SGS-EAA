@@ -49,7 +49,7 @@ export default {
 <style>
 :root {
   /* 颜色变量保持不变 */
-  --primary-color: #003366;
+  --primary-color: #ed6d2d;
   --secondary-color: #2d4271;
   --text-light: #6b7c93;
   --text-dark: #003366;
