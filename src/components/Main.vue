@@ -664,19 +664,19 @@ const handleExport = () => {
             <div class="cycle-item">
               <span class="cycle-label">Wave #1: Release Hight Risk Items</span>
               <span class="cycle-value">{{ Time[0] }} </span>
-              <span class="cycle-label">Working Days</span>
+              <span class="cycle-label">WD</span>
             </div>
             <div class="cycle-item">
               <span class="cycle-label">Wave #1: Release Full Test Items</span>
               <span class="cycle-value">{{ Time[1] }} </span>
-              <span class="cycle-label">Working Days</span>
+              <span class="cycle-label">WD</span>
             </div>
             <div class="cycle-item">
               <span class="cycle-label"
                 >Wave #2: Release Test Report + VoC</span
               >
               <span class="cycle-value">{{ Time[2] }} </span>
-              <span class="cycle-label">Working Days</span>
+              <span class="cycle-label">WD</span>
             </div>
           </div>
         </div>
@@ -839,9 +839,15 @@ const handleExport = () => {
   border-radius: 4px;
   background: rgba(237, 109, 45, 0.1);
   display: inline-block;
+  /* 确保标题不会过长导致换行 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  max-width: calc(100% - 80px); /* 为按钮预留空间 */
 }
 
-/* 区块头部（标题+按钮） */
+/* 区块头部（标题+按钮）- 核心修改 */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -849,9 +855,12 @@ const handleExport = () => {
   padding: 5px 15px;
   background: rgba(237, 109, 45, 0.05);
   border-bottom: 1px solid rgba(237, 109, 45, 0.1);
+  /* 关键：禁止换行 */
+  flex-wrap: nowrap;
+  gap: 10px; /* 标题和按钮之间的间距 */
 }
 
-/* 切换按钮样式 */
+/* 切换按钮样式 - 核心修改 */
 .toggle-btn {
   background: rgba(237, 109, 45, 0.1);
   border: 1px solid #ed6d2d;
@@ -861,6 +870,10 @@ const handleExport = () => {
   cursor: pointer;
   color: #ed6d2d;
   transition: all 0.2s ease;
+  /* 确保按钮不会被挤压 */
+  white-space: nowrap; /* 按钮文字不换行 */
+  flex-shrink: 0; /* 不收缩 */
+  min-width: 60px; /* 最小宽度确保按钮文字完整显示 */
 }
 
 .toggle-btn:hover {
@@ -918,7 +931,7 @@ const handleExport = () => {
   border-left: 2px solid rgba(237, 109, 45, 0.2);
 }
 
-/* 周期项样式 */
+/* 周期项样式 - 优化不换行 */
 .cycle-content {
   display: flex;
   flex-direction: column;
@@ -932,21 +945,35 @@ const handleExport = () => {
   padding: 10px 12px;
   border-radius: 6px;
   background: rgba(237, 109, 45, 0.05);
+  flex-wrap: nowrap; /* 强制不换行 */
+  gap: 8px;
 }
 
-.cycle-label {
-  font-size: 13px;
-  color: #333;
-  flex: 1;
+.cycle-label:first-child {
+  flex: 1; /* 左侧长文本占据剩余空间 */
+  white-space: nowrap; /* 禁止换行 */
+  overflow: hidden; /* 超出隐藏 */
+  text-overflow: ellipsis; /* 超出显示省略号 */
+  min-width: 0; /* 允许内容收缩到最小 */
+}
+
+.cycle-value,
+.cycle-label:last-child {
+  flex-shrink: 0; /* 禁止收缩 */
+  white-space: nowrap; /* 禁止换行 */
 }
 
 .cycle-value {
   font-size: 14px;
   color: #ed6d2d;
   font-weight: 600;
-  padding: 0 10px;
-  min-width: 40px;
-  text-align: center;
+  padding: 0 4px;
+  margin-right: 4px;
+}
+
+.cycle-label {
+  font-size: 13px;
+  color: #333;
 }
 
 /* 测试样本区域 */
@@ -1010,20 +1037,22 @@ const handleExport = () => {
     margin-bottom: 15px;
   }
 
+  /* 关键修改：保持标题和按钮在同一行 */
   .section-header {
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px;
+    padding: 8px 10px;
+    gap: 8px;
   }
 
   .section-title {
-    width: 100%;
-    margin-bottom: 5px;
-    text-align: left;
+    font-size: 14px;
+    padding: 4px 8px;
+    max-width: calc(100% - 70px); /* 小屏幕为按钮预留更多空间 */
   }
 
   .toggle-btn {
-    margin-left: auto;
+    padding: 3px 8px;
+    font-size: 12px;
+    min-width: 55px;
   }
 
   .checkbox-group {
@@ -1039,17 +1068,19 @@ const handleExport = () => {
     width: 100%;
   }
 
-  /* 周期项在小屏幕垂直排列 */
+  /* 周期项在小屏幕优化 */
   .cycle-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    padding: 10px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .cycle-label {
+    font-size: 12px;
   }
 
   .cycle-value {
-    padding: 0;
-    align-self: flex-end;
+    font-size: 13px;
+    padding: 0 2px;
   }
 
   /* 测试样本区域垂直排列 */
@@ -1083,17 +1114,34 @@ const handleExport = () => {
     flex: 1 0 100%;
   }
 
-  .cycle-label {
-    font-size: 12px;
-  }
-
   .clause-item {
     width: 100%;
   }
 
   .section-title {
-    font-size: 14px;
-    padding: 6px 10px;
+    font-size: 13px;
+    padding: 3px 6px;
+    max-width: calc(100% - 65px);
+  }
+
+  .toggle-btn {
+    font-size: 11px;
+    padding: 2px 6px;
+    min-width: 50px;
+  }
+
+  /* 周期项在超小屏幕优化 */
+  .cycle-item {
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .cycle-label {
+    font-size: 11px;
+  }
+
+  .cycle-value {
+    font-size: 12px;
   }
 }
 
