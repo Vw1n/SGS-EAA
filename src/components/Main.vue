@@ -460,7 +460,7 @@ const handleExport = () => {
     <div class="product-card">
       <!-- 产品选择标题 -->
       <h3 class="card-title">
-        Please select the product category for EAA Directive
+        Please select your Product/Services
       </h3>
 
       <!-- 产品下拉选择区 -->
@@ -503,11 +503,11 @@ const handleExport = () => {
           value == 'Tablet/Pad'
         "
       >
-        <h4 class="section-title">请输入主体app数量</h4>
+        <h4 class="section-title">请输入主体Apps数量</h4>
         <el-input
           v-model="appNum"
           style="width: 400px"
-          placeholder="输入app数量"
+          placeholder="输入Apps数量"
         />
       </div>
       <div v-else-if="value != 'Website(s)'">
@@ -559,7 +559,7 @@ const handleExport = () => {
             v-if="showOsSelection"
             v-model="appNum"
             style="width: 400px"
-            placeholder="输入app数量"
+            placeholder="输入Apps数量"
           />
         </div>
       </div>
@@ -748,6 +748,7 @@ const handleExport = () => {
   max-width: 700px;
   margin: 0 auto;
   padding: 0 15px;
+  width: 100%;
 }
 
 .product-card {
@@ -755,17 +756,22 @@ const handleExport = () => {
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   padding: 20px;
+  width: 100%;
 }
 
 /* 标题样式 */
 .card-title {
-  font-size: 18px;
+  font-size: clamp(14px, 3vw, 18px);
   font-weight: 600;
   color: #ed6d2d;
   padding-bottom: 12px;
   margin-bottom: 20px;
   border-bottom: 2px solid rgba(237, 109, 45, 0.2);
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 /* 表单区域 */
@@ -811,43 +817,78 @@ const handleExport = () => {
   border: 1px solid rgba(237, 109, 45, 0.1);
 }
 
-/* 复选框组样式 */
+/* 复选框组样式 - 核心优化：强制靠左对齐 */
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 15px;
   padding: 5px 0;
   align-items: center;
+  gap: 8px 10px;
+  justify-content: flex-start; /* 强制子项靠左对齐 */
+  align-content: flex-start; /* 多行时依然靠左 */
 }
 
+/* 章节复选框组特殊优化 */
+.clause-checkboxes {
+  gap: 8px 12px;
+  justify-content: flex-start; /* 明确靠左对齐 */
+}
+
+/* 自定义复选框样式 - 确保左对齐 */
 .custom-checkbox {
-  flex: 0 0 auto;
-  min-width: 100px;
+  flex: 1 0 auto;
+  min-width: auto;
   padding: 0;
   display: flex;
   align-items: center;
   cursor: pointer;
+  white-space: nowrap;
+  margin: 0; /* 移除默认margin避免偏移 */
+  justify-content: flex-start; /* 内容靠左 */
 }
 
-/* 区块标题样式（统一各部分标题） */
+/* 章节复选框项特殊样式 */
+.clause-checkbox-item {
+  flex: 1 0 min-content;
+  margin: 0;
+  padding: 2px 0; /* 移除右侧内边距避免对齐偏移 */
+  justify-content: flex-start;
+}
+
+/* 章节项内容样式 - 确保左对齐 */
+.clause-item {
+  background: rgba(237, 109, 45, 0.05);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #333;
+  transition: all 0.2s ease;
+  width: auto;
+  min-width: 80px;
+  text-align: left; /* 文本靠左 */
+  margin: 0;
+}
+
+.clause-item:hover {
+  background: rgba(237, 109, 45, 0.1);
+}
+
+/* 区块标题样式 */
 .section-title {
   font-size: 15px;
   font-weight: 600;
   color: #ed6d2d;
-  margin: 0;
+  margin: 0 0 10px 0; /* 增加底部间距，与下方选项区拉开距离 */
   padding: 2px 12px;
   border-radius: 4px;
   background: rgba(237, 109, 45, 0.1);
   display: inline-block;
-  /* 确保标题不会过长导致换行 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex-shrink: 1;
-  max-width: calc(100% - 80px); /* 为按钮预留空间 */
 }
 
-/* 区块头部（标题+按钮）- 核心修改 */
+/* 区块头部 */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -855,12 +896,11 @@ const handleExport = () => {
   padding: 5px 15px;
   background: rgba(237, 109, 45, 0.05);
   border-bottom: 1px solid rgba(237, 109, 45, 0.1);
-  /* 关键：禁止换行 */
   flex-wrap: nowrap;
-  gap: 10px; /* 标题和按钮之间的间距 */
+  gap: 10px;
 }
 
-/* 切换按钮样式 - 核心修改 */
+/* 切换按钮样式 */
 .toggle-btn {
   background: rgba(237, 109, 45, 0.1);
   border: 1px solid #ed6d2d;
@@ -870,10 +910,9 @@ const handleExport = () => {
   cursor: pointer;
   color: #ed6d2d;
   transition: all 0.2s ease;
-  /* 确保按钮不会被挤压 */
-  white-space: nowrap; /* 按钮文字不换行 */
-  flex-shrink: 0; /* 不收缩 */
-  min-width: 60px; /* 最小宽度确保按钮文字完整显示 */
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 60px;
 }
 
 .toggle-btn:hover {
@@ -881,7 +920,7 @@ const handleExport = () => {
   color: #fff;
 }
 
-/* 条款区域 */
+/* 条款区域容器 */
 .clause-section-wrapper,
 .cycle-section-wrapper,
 .test-samples-section-wrapper,
@@ -897,26 +936,11 @@ const handleExport = () => {
 .cycle-section,
 .test-samples-section,
 .cost-section {
-  padding: 3px 15px;
+  padding: 8px 15px;
   background: #fff;
 }
 
-/* 条款项样式 */
-.clause-item {
-  background: rgba(237, 109, 45, 0.05);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #333;
-  transition: all 0.2s ease;
-  width: 100px;
-}
-
-.clause-item:hover {
-  background: rgba(237, 109, 45, 0.1);
-}
-
-/* 红色提示文本（统一为主题色） */
+/* 红色提示文本 */
 .red-alert-wrapper {
   margin-bottom: 15px;
 }
@@ -931,7 +955,7 @@ const handleExport = () => {
   border-left: 2px solid rgba(237, 109, 45, 0.2);
 }
 
-/* 周期项样式 - 优化不换行 */
+/* 周期项样式 */
 .cycle-content {
   display: flex;
   flex-direction: column;
@@ -945,22 +969,22 @@ const handleExport = () => {
   padding: 10px 12px;
   border-radius: 6px;
   background: rgba(237, 109, 45, 0.05);
-  flex-wrap: nowrap; /* 强制不换行 */
+  flex-wrap: nowrap;
   gap: 8px;
 }
 
 .cycle-label:first-child {
-  flex: 1; /* 左侧长文本占据剩余空间 */
-  white-space: nowrap; /* 禁止换行 */
-  overflow: hidden; /* 超出隐藏 */
-  text-overflow: ellipsis; /* 超出显示省略号 */
-  min-width: 0; /* 允许内容收缩到最小 */
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .cycle-value,
 .cycle-label:last-child {
-  flex-shrink: 0; /* 禁止收缩 */
-  white-space: nowrap; /* 禁止换行 */
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .cycle-value {
@@ -983,6 +1007,7 @@ const handleExport = () => {
   flex-wrap: wrap;
   gap: 15px;
   padding: 5px 0;
+  justify-content: flex-start; /* 同样靠左对齐 */
 }
 
 .sample-quantity {
@@ -1021,23 +1046,22 @@ const handleExport = () => {
   text-align: center;
 }
 
-/* 响应式优化 */
+/* 响应式优化 - 保持左对齐 */
 @media (max-width: 768px) {
   .product-selection-container {
     padding: 8px;
   }
 
   .product-card {
-    padding: 12px;
+    padding: 15px;
   }
 
   .card-title {
-    font-size: 16px;
+    font-size: clamp(15px, 3vw, 17px);
     padding-bottom: 10px;
     margin-bottom: 15px;
   }
 
-  /* 关键修改：保持标题和按钮在同一行 */
   .section-header {
     padding: 8px 10px;
     gap: 8px;
@@ -1046,7 +1070,7 @@ const handleExport = () => {
   .section-title {
     font-size: 14px;
     padding: 4px 8px;
-    max-width: calc(100% - 70px); /* 小屏幕为按钮预留更多空间 */
+    max-width: calc(100% - 70px);
   }
 
   .toggle-btn {
@@ -1056,19 +1080,9 @@ const handleExport = () => {
   }
 
   .checkbox-group {
-    gap: 8px;
+    gap: 6px 8px;
   }
 
-  .custom-checkbox {
-    min-width: auto;
-    flex: 1 0 45%;
-  }
-
-  .clause-item {
-    width: 100%;
-  }
-
-  /* 周期项在小屏幕优化 */
   .cycle-item {
     padding: 8px 10px;
     gap: 6px;
@@ -1083,10 +1097,9 @@ const handleExport = () => {
     padding: 0 2px;
   }
 
-  /* 测试样本区域垂直排列 */
   .test-samples-group {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-start; /* 垂直排列时靠左 */
     gap: 10px;
   }
 
@@ -1097,7 +1110,6 @@ const handleExport = () => {
     min-width: 100%;
   }
 
-  /* 输入框自适应宽度 */
   .el-input {
     width: 100% !important;
   }
@@ -1108,14 +1120,19 @@ const handleExport = () => {
   }
 }
 
-/* 超小屏幕优化 */
 @media (max-width: 480px) {
+  .card-title {
+    font-size: clamp(14px, 4vw, 16px);
+    padding: 0 5px 10px;
+  }
+
   .custom-checkbox {
-    flex: 1 0 100%;
+    flex: 1 0 45%;
   }
 
   .clause-item {
-    width: 100%;
+    font-size: 12px;
+    padding: 5px 10px;
   }
 
   .section-title {
@@ -1130,7 +1147,6 @@ const handleExport = () => {
     min-width: 50px;
   }
 
-  /* 周期项在超小屏幕优化 */
   .cycle-item {
     padding: 6px 8px;
     gap: 4px;
@@ -1145,7 +1161,18 @@ const handleExport = () => {
   }
 }
 
-/* 动画效果优化 */
+/* 超小屏幕优化 */
+@media (max-width: 360px) {
+  .clause-checkbox-item {
+    flex: 1 0 100%;
+  }
+  
+  .checkbox-group {
+    gap: 5px;
+  }
+}
+
+/* 动画效果 */
 .animate-fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
