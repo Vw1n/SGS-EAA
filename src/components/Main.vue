@@ -222,6 +222,7 @@ const priceMap = {
   "Smart Watch": 72000,
   Television: 92000,
   "Website(s)": 0,
+  "Mobile App(s)": 0,
 };
 
 // 周期映射
@@ -240,6 +241,7 @@ const TimeMap = {
   Telephone: [10, 7, 3],
   Treadmill: [10, 10, 3],
   "Website(s)": [10, 10, 3],
+  "Mobile App(s)": [10, 10, 3],
 };
 const Time = computed(() => TimeMap[value.value] || []);
 
@@ -455,285 +457,298 @@ const handleExport = () => {
 };
 </script>
 <template>
-  <Head />
-  <div class="product-selection-container">
-    <div class="product-card">
-      <!-- 产品选择标题 -->
-      <h3 class="card-title">
-        Please select your Product/Services
-      </h3>
+  <div>
+    <Head />
+    <div class="product-selection-container">
+      <div class="product-card">
+        <!-- 产品选择标题 -->
+        <h3 class="card-title">Please select your Product/Services</h3>
 
-      <!-- 产品下拉选择区 -->
-      <div class="form-group">
-        <el-select
-          v-model="value"
-          placeholder="Product Category"
-          size="large"
-          class="custom-select"
-        >
-          <el-option-group
-            v-for="group in options"
-            :key="group.label"
-            :label="group.label"
-          >
-            <el-option
-              v-for="item in group.options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-option-group>
-          <template #footer>如找不到对应类别，请联系Ryan Yang报价</template>
-        </el-select>
-      </div>
-
-      <div class="link-number">
-        <el-input
-          v-if="value === 'Website(s)'"
-          v-model="linkNum"
-          style="width: 300px"
-          placeholder="输入Link数量"
-        />
-      </div>
-      <!-- 移动端支持 -->
-      <div
-        v-if="
-          value == 'Smart Phone' ||
-          value == 'Smart Watch' ||
-          value == 'Tablet/Pad'
-        "
-      >
-        <h4 class="section-title">请输入主体Apps数量</h4>
-        <el-input
-          v-model="appNum"
-          style="width: 400px"
-          placeholder="输入Apps数量"
-        />
-      </div>
-      <div v-else-if="value != 'Website(s)'">
-        <!-- 移动端支持复选框 -->
-        <div class="mobile-support-option" v-if="value">
-          <div v-if="osHight" class="os-hint red-highlight">
-            提醒：所选产品除本体支持安装Apps外，还有可能支持移动端Apps控制场景。
-          </div>
-          <el-checkbox
-            v-model="showOsSelection"
-            label="是否支持移动端"
+        <!-- 产品下拉选择区 -->
+        <div class="form-group">
+          <el-select
+            v-model="value"
+            placeholder="Product Category"
             size="large"
-            class="os-checkbox"
+            class="custom-select"
+          >
+            <el-option-group
+              v-for="group in options"
+              :key="group.label"
+              :label="group.label"
+            >
+              <el-option
+                v-for="item in group.options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-option-group>
+            <template #footer>如找不到对应类别，请联系Ryan Yang报价</template>
+          </el-select>
+        </div>
+
+        <div class="link-number">
+          <el-input
+            v-if="value === 'Website(s)'"
+            v-model="linkNum"
+            style="width: 300px"
+            placeholder="输入Link数量"
           />
         </div>
-        <!-- 移动端操作系统选择区 -->
-        <div v-if="showOsSelection" class="os-selection animate-fade-in">
-          <h4 class="section-title">
-            <span v-if="value != 'Mobile App(s)'">如支持移动端Apps，</span
-            >请勾选Apps安装在移动端的操作系统：
-          </h4>
-          <div class="checkbox-group">
-            <el-checkbox
-              v-model="checkedIOS"
-              label="IOS"
-              size="large"
-              class="custom-checkbox"
-            />
-            <el-checkbox
-              v-model="checkedAndroid"
-              label="Android"
-              size="large"
-              class="custom-checkbox"
-            />
-            <el-checkbox
-              v-model="checkedOthers"
-              label="Others"
-              size="large"
-              class="custom-checkbox"
-            />
-            <el-input
-              v-if="checkedOthers"
-              v-model="inputOS"
-              style="width: 120px"
-              placeholder="输入系统名称"
-            />
-          </div>
+        <!-- 移动端支持 -->
+        <div
+          v-if="
+            value == 'Smart Phone' ||
+            value == 'Smart Watch' ||
+            value == 'Tablet/Pad'
+          "
+        >
+          <h4 class="section-title">请输入主体Apps数量</h4>
           <el-input
-            v-if="showOsSelection"
             v-model="appNum"
             style="width: 400px"
             placeholder="输入Apps数量"
           />
         </div>
-      </div>
-      <div v-else>
-        <div class="mobile-support-option" v-if="value">
-          <h4 class="section-title">请勾选Website(s)适配的操作系统：</h4>
-          <div class="checkbox-group">
+        <div v-else-if="value != 'Website(s)'">
+          <!-- 移动端支持复选框 -->
+          <div class="mobile-support-option" v-if="value">
+            <div v-if="osHight" class="os-hint red-highlight">
+              提醒：所选产品除本体支持安装Apps外，还有可能支持移动端Apps控制场景。
+            </div>
             <el-checkbox
-              v-model="checkedWindows"
-              label="Windows"
+              v-model="showOsSelection"
+              label="是否支持移动端"
               size="large"
-              class="custom-checkbox"
+              class="os-checkbox"
             />
-            <el-checkbox
-              v-model="checkedMac"
-              label="Mac OS"
-              size="large"
-              class="custom-checkbox"
-            />
-            <el-checkbox
-              v-model="checkedIOS"
-              label="IOS"
-              size="large"
-              class="custom-checkbox"
-            />
-            <el-checkbox
-              v-model="checkedAndroid"
-              label="Android"
-              size="large"
-              class="custom-checkbox"
-            />
-            <el-checkbox
-              v-model="checkedOthers"
-              label="Others"
-              size="large"
-              class="custom-checkbox"
-            />
+          </div>
+          <!-- 移动端操作系统选择区 -->
+          <div v-if="showOsSelection" class="os-selection animate-fade-in">
+            <h4 class="section-title">
+              <span v-if="value != 'Mobile App(s)'">如支持移动端Apps，</span
+              >请勾选Apps安装在移动端的操作系统：
+            </h4>
+            <div class="checkbox-group">
+              <el-checkbox
+                v-model="checkedIOS"
+                label="IOS"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-checkbox
+                v-model="checkedAndroid"
+                label="Android"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-checkbox
+                v-model="checkedOthers"
+                label="Others"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-input
+                v-if="checkedOthers"
+                v-model="inputOS"
+                style="width: 120px"
+                placeholder="输入系统名称"
+              />
+            </div>
             <el-input
-              v-if="checkedOthers"
-              v-model="inputOS"
-              style="width: 120px"
-              placeholder="输入系统名称"
+              v-if="showOsSelection"
+              v-model="appNum"
+              style="width: 400px"
+              placeholder="输入Apps数量"
             />
           </div>
         </div>
-      </div>
-      <!-- 适用条款区 -->
-      <div v-if="Clause.length" class="clause-section-wrapper">
-        <div class="section-header">
-          <h4 class="section-title">1.Test Clause</h4>
-          <button class="toggle-btn" @click="showClause = !showClause">
-            {{ showClause ? "隐藏" : "显示" }}
-          </button>
-        </div>
-        <div v-if="showClause" class="clause-section animate-fade-in">
-          <div class="red-alert-wrapper">
-            <div class="red-alert-text">
-              SGS EAA Lab only evaluates the requirements in Table ZB.1 of the
-              EN 301 549.
-            </div>
-            <div
-              class="red-alert-text"
-              v-if="
-                value == 'Smart Phone' ||
-                value == 'Smart Watch' ||
-                value == 'Tablet/Pad'
-              "
-            >
-              This quotation does not include the HAC tests.
+        <div v-else>
+          <div class="mobile-support-option" v-if="value">
+            <h4 class="section-title">请勾选Website(s)适配的操作系统：</h4>
+            <div class="checkbox-group">
+              <el-checkbox
+                v-model="checkedWindows"
+                label="Windows"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-checkbox
+                v-model="checkedMac"
+                label="Mac OS"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-checkbox
+                v-model="checkedIOS"
+                label="IOS"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-checkbox
+                v-model="checkedAndroid"
+                label="Android"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-checkbox
+                v-model="checkedOthers"
+                label="Others"
+                size="large"
+                class="custom-checkbox"
+              />
+              <el-input
+                v-if="checkedOthers"
+                v-model="inputOS"
+                style="width: 120px"
+                placeholder="输入系统名称"
+              />
             </div>
           </div>
-          <el-checkbox-group
-            class="checkbox-group clause-checkboxes"
-            v-model="clausechecked"
-          >
-            <el-checkbox
-              v-for="(item, index) in Clause"
-              :key="index"
-              :label="item"
-              class="custom-checkbox clause-checkbox-item"
-              :title="titleMap[item]"
-              checked="true"
-            >
-              <div class="clause-item">
-                <span class="clause-label">{{ item }}</span>
+        </div>
+        <!-- 适用条款区 -->
+        <div v-if="Clause.length" class="clause-section-wrapper">
+          <div class="section-header">
+            <h4 class="section-title">1.Test Clause</h4>
+            <button class="toggle-btn" @click="showClause = !showClause">
+              {{ showClause ? "隐藏" : "显示" }}
+            </button>
+          </div>
+          <div v-if="showClause" class="clause-section animate-fade-in">
+            <div class="red-alert-wrapper">
+              <div class="red-alert-text">
+                SGS EAA Lab only evaluates the requirements in Table ZB.1 of the
+                EN 301 549.
               </div>
-            </el-checkbox>
-          </el-checkbox-group>
-        </div>
-      </div>
-
-      <!-- 周期区域 -->
-      <div v-if="value" class="cycle-section-wrapper">
-        <div class="section-header">
-          <h4 class="section-title">2.Lead Time(Working Days)</h4>
-          <button class="toggle-btn" @click="showLeadTime = !showLeadTime">
-            {{ showLeadTime ? "隐藏" : "显示" }}
-          </button>
-        </div>
-        <div v-if="showLeadTime" class="animate-fade-in cycle-section">
-          <div class="cycle-content">
-            <div class="cycle-item">
-              <span class="cycle-label">Wave #1: Release Hight Risk Items</span>
-              <span class="cycle-value">{{ Time[0] }} </span>
-              <span class="cycle-label">WD</span>
-            </div>
-            <div class="cycle-item">
-              <span class="cycle-label">Wave #1: Release Full Test Items</span>
-              <span class="cycle-value">{{ Time[1] }} </span>
-              <span class="cycle-label">WD</span>
-            </div>
-            <div class="cycle-item">
-              <span class="cycle-label"
-                >Wave #2: Release Test Report + VoC</span
+              <div
+                class="red-alert-text"
+                v-if="
+                  value == 'Smart Phone' ||
+                  value == 'Smart Watch' ||
+                  value == 'Tablet/Pad'
+                "
               >
-              <span class="cycle-value">{{ Time[2] }} </span>
-              <span class="cycle-label">WD</span>
+                This quotation does not include the HAC tests.
+              </div>
+            </div>
+            <el-checkbox-group
+              class="checkbox-group clause-checkboxes"
+              v-model="clausechecked"
+            >
+              <el-checkbox
+                v-for="(item, index) in Clause"
+                :key="index"
+                :label="item"
+                class="custom-checkbox clause-checkbox-item"
+                :title="titleMap[item]"
+                checked="true"
+              >
+                <div class="clause-item">
+                  <span class="clause-label">{{ item }}</span>
+                </div>
+              </el-checkbox>
+            </el-checkbox-group>
+          </div>
+        </div>
+
+        <!-- 周期区域 -->
+        <div v-if="value" class="cycle-section-wrapper">
+          <div class="section-header">
+            <h4 class="section-title">
+              2.Lead Time(Working Days)<span v-if="value == 'Website(s)'">
+                Every hundred web pages</span
+              ><span v-if="value == 'Mobile App(s)'">
+                Every ten App(s)</span
+              >
+            </h4>
+            <button class="toggle-btn" @click="showLeadTime = !showLeadTime">
+              {{ showLeadTime ? "隐藏" : "显示" }}
+            </button>
+          </div>
+          <div v-if="showLeadTime" class="animate-fade-in cycle-section">
+            <div class="cycle-content">
+              <div class="cycle-item">
+                <span class="cycle-label"
+                  >Wave #1: Release Hight Risk Items</span
+                >
+                <span class="cycle-value">{{ Time[0] }} </span>
+                <span class="cycle-label">WD</span>
+              </div>
+              <div class="cycle-item">
+                <span class="cycle-label"
+                  >Wave #1: Release Full Test Items</span
+                >
+                <span class="cycle-value">{{ Time[1] }} </span>
+                <span class="cycle-label">WD</span>
+              </div>
+              <div class="cycle-item">
+                <span class="cycle-label"
+                  >Wave #2: Release Test Report + VoC</span
+                >
+                <span class="cycle-value">{{ Time[2] }} </span>
+                <span class="cycle-label">WD</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 测试样本区域 -->
-      <div v-if="value" class="test-samples-section-wrapper">
-        <div class="section-header">
-          <h4 class="section-title">3.Test Sample(Unit)</h4>
-          <button class="toggle-btn" @click="showTestSample = !showTestSample">
-            {{ showTestSample ? "隐藏" : "显示" }}
-          </button>
-        </div>
-        <div v-if="showTestSample" class="test-samples-section">
-          <div class="test-samples-group">
-            <div class="sample-quantity">
-              Sample Quantity
-              <span class="quantity-value">{{ quantity }}</span>
-            </div>
-            <div v-if="value == 'Smart Phone' || value == 'Smart Watch'">
-              <el-checkbox
-                v-model="checkedRTT"
-                label="是否支持RTT"
-                size="large"
-                class="sample-checkbox"
-              />
-            </div>
-            <div v-if="value == 'Smart Phone' || value == 'Telephone'">
-              <el-checkbox
-                v-model="checkedHAC"
-                label="是否支持HAC"
-                size="large"
-                class="sample-checkbox"
-              />
+        <!-- 测试样本区域 -->
+        <div v-if="value" class="test-samples-section-wrapper">
+          <div class="section-header">
+            <h4 class="section-title">3.Test Sample(Unit)</h4>
+            <button
+              class="toggle-btn"
+              @click="showTestSample = !showTestSample"
+            >
+              {{ showTestSample ? "隐藏" : "显示" }}
+            </button>
+          </div>
+          <div v-if="showTestSample" class="test-samples-section">
+            <div class="test-samples-group">
+              <div class="sample-quantity">
+                Sample Quantity
+                <span class="quantity-value">{{ quantity }}</span>
+              </div>
+              <div v-if="value == 'Smart Phone' || value == 'Smart Watch'">
+                <el-checkbox
+                  v-model="checkedRTT"
+                  label="是否支持RTT"
+                  size="large"
+                  class="sample-checkbox"
+                />
+              </div>
+              <div v-if="value == 'Smart Phone' || value == 'Telephone'">
+                <el-checkbox
+                  v-model="checkedHAC"
+                  label="是否支持HAC"
+                  size="large"
+                  class="sample-checkbox"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 费用展示区 -->
-      <div class="cost-section-wrapper" v-if="authStore.auth == 'inner'">
-        <div class="section-header">
-          <h4 class="section-title">4.Quotation(CNY, Not includingVAT)</h4>
-          <button class="toggle-btn" @click="showQuotation = !showQuotation">
-            {{ showQuotation ? "隐藏" : "显示" }}
-          </button>
-        </div>
-        <div v-if="showQuotation" class="cost-section animate-fade-in">
-          <div class="cost-display">¥{{ cost.toLocaleString() }} (CNY)</div>
+        <!-- 费用展示区 -->
+        <div class="cost-section-wrapper" v-if="authStore.auth == 'inner'">
+          <div class="section-header">
+            <h4 class="section-title">4.Quotation(CNY, Not includingVAT)</h4>
+            <button class="toggle-btn" @click="showQuotation = !showQuotation">
+              {{ showQuotation ? "隐藏" : "显示" }}
+            </button>
+          </div>
+          <div v-if="showQuotation" class="cost-section animate-fade-in">
+            <div class="cost-display">¥{{ cost.toLocaleString() }} (CNY)</div>
+          </div>
         </div>
       </div>
+      <div class="export-section">
+        <ExportButton :isDisabled="!value" @export="handleExport" />
+      </div>
     </div>
-    <div class="export-section">
-      <ExportButton :isDisabled="!value" @export="handleExport" />
-    </div>
+    <logout />
   </div>
-  <logout />
 </template>
 <style scoped>
 /* 基础样式重置与核心变量 */
@@ -1166,7 +1181,7 @@ const handleExport = () => {
   .clause-checkbox-item {
     flex: 1 0 100%;
   }
-  
+
   .checkbox-group {
     gap: 5px;
   }
