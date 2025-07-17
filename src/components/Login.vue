@@ -35,7 +35,7 @@ const handleLogin = async () => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 800));
     if (
-      (username.value === "SGS" && validateString(password.value)) ||
+      (username.value === "ryan.yang@sgs.com" && password.value === "SGSEAA") ||
       (username.value === "123" && password.value === "123")
     ) {
       localStorage.setItem("token", "true");
@@ -86,13 +86,14 @@ onMounted(() => {
         <i class="fa fa-shield-alt"></i>
         <span class="brand-text">SGS EAA Lab</span>
       </div>
+      <!--
       <div class="select-type" v-if="!clientShow && !innerShow">
         <el-button type="success" @click="changeClient">客户登录</el-button>
         <el-button type="warning" @click="changeInner">内部登录</el-button>
       </div>
-      <div v-if="innerShow">
+      -->
+      <div>
         <!-- 标题 -->
-        <h1 class="login-title">SGG 内部登录</h1>
 
         <!-- 错误提示 -->
         <div v-if="errorMessage" class="error-notification">
@@ -111,7 +112,7 @@ onMounted(() => {
               <input
                 v-model="username"
                 type="text"
-                placeholder="请输入账号"
+                placeholder="请输入 SGS 邮箱"
                 class="form-input"
                 autocomplete="off"
                 required

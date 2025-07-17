@@ -719,7 +719,7 @@ const handleExport = () => {
       <!-- 费用展示区 -->
       <div class="cost-section-wrapper" v-if="authStore.auth == 'inner'">
         <div class="section-header">
-          <h4 class="section-title">4.Quotation(CNY,Not includingVAT)</h4>
+          <h4 class="section-title">4.Quotation(CNY, Not includingVAT)</h4>
           <button class="toggle-btn" @click="showQuotation = !showQuotation">
             {{ showQuotation ? "隐藏" : "显示" }}
           </button>
