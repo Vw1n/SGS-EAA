@@ -14,6 +14,20 @@ const showLeadTime = ref(true);
 const showTestSample = ref(true);
 const showQuotation = ref(true);
 
+// 常见移动端高亮映射
+const osHightMap = {
+  Camera: true,
+  POS: true,
+  "Router/CPE/AP/Gateway": true,
+  "Set-top Box": true,
+  "Smart Home Devices": true,
+  Television: true,
+};
+const osHight = computed(() => osHightMap[value.value] || false);
+
+// 章节固定全选
+const clausechecked = true;
+
 // 下拉选择框
 const value = ref(null);
 const options = [
@@ -44,17 +58,6 @@ const options = [
   },
 ];
 
-// 常见移动端高亮映射
-const osHightMap = {
-  Camera: true,
-  POS: true,
-  "Router/CPE/AP/Gateway": true,
-  "Set-top Box": true,
-  "Smart Home Devices": true,
-  Television: true,
-};
-const osHight = computed(() => osHightMap[value.value] || false);
-
 // 移动端操作系统选择器
 const checkedIOS = ref(false);
 const checkedAndroid = ref(false);
@@ -65,6 +68,7 @@ const showOsSelection = ref(false);
 
 const checkedRTT = ref(false);
 const checkedHAC = ref(false);
+
 const quantity = computed(() => {
   let quantity = 2;
   if (value.value == "Treadmill") {
@@ -74,7 +78,6 @@ const quantity = computed(() => {
   if (checkedHAC.value) quantity += 1;
   return quantity;
 });
-const clausechecked = true;
 
 const inputOS = ref("");
 const appNum = ref(null);
@@ -266,54 +269,188 @@ const getSelectedOS = () => {
   return osList.length ? osList.join(", ") : "无";
 };
 
-// 导出Excel功能
 const handleExport = () => {
-  const exportData = [
-    { 项目: "产品类别", 信息: value.value },
+  // 大标题行（仅一行）
+  const titleRow = [{ 项目: "", 信息: "" }];
+
+  // 基础信息模块
+  const baseInfo = [
+    { 项目: "产品/服务类别", 信息: value.value || "未选择" },
     { 项目: "是否支持移动端", 信息: showOsSelection.value ? "是" : "否" },
     { 项目: "支持的操作系统", 信息: getSelectedOS() },
+    { 项目: "应用程序数量", 信息: appNum.value || 0 },
+    { 项目: "链接数量", 信息: linkNum.value || 0 },
     { 项目: "总费用(CNY)", 信息: `¥${cost.value.toLocaleString()}` },
-    { 项目: "", 信息: "" },
-    { 项目: "测试周期", 信息: "时间" },
-    {
-      项目: "Wave #1: Release Hight Risk Items",
-      信息: `${Time.value[0]} Working Days`,
-    },
-    {
-      项目: "Wave #1: Release Full Test Items",
-      信息: `${Time.value[1]} Working Days`,
-    },
-    {
-      项目: "Wave #2: Release Test Report + VoC",
-      信息: `${Time.value[2]} Working Days`,
-    },
-    { 项目: "", 信息: "" },
-    { 项目: "测试条款", 信息: "测试条目数" },
-    ...Clause.value.map((clause) => ({
-      项目: clause,
-      信息: titleMap[clause].split("丨").pop(),
-    })),
-    { 项目: "", 信息: "" },
-    { 项目: "测试样品", 信息: "数量" },
-    { 项目: "正常样机（附件出厂配件）", 信息: `2` },
-    { 项目: "RTT 样机", 信息: checkedRTT.value ? "3" : "0" },
-    { 项目: "", 信息: "" },
-    { 项目: "启动测试需要提供资料", 信息: "备注" },
-    {
-      项目: "EU 2019 882 测试产品技术资料清单",
-      信息: "https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true",
-    },
-    { 项目: "User Manual", 信息: "" },
-    {
-      项目: "Declaration of Model Differences(如有多型号)",
-      信息: "https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true",
-    },
+    { 项目: "", 信息: "" }, // 空行分隔
   ];
+
+  // 测试周期模块
+  const testCycle = [
+    { 项目: "测试周期详情", 信息: "" },
+    {
+      项目: "Wave #1: 高风险项反馈",
+      信息: Time.value[0] ? `${Time.value[0]} 工作日` : "未定义",
+    },
+    {
+      项目: "Wave #1: 完整测试项反馈",
+      信息: Time.value[1] ? `${Time.value[1]} 工作日` : "未定义",
+    },
+    {
+      项目: "Wave #2: 测试报告+客户反馈",
+      信息: Time.value[2] ? `${Time.value[2]} 工作日` : "未定义",
+    },
+    { 项目: "", 信息: "" }, // 空行分隔
+  ];
+
+  // 测试条款模块
+  const testClauses = [
+    { 项目: "测试条款", 信息: "测试条目数" },
+    ...(Clause.value.length
+      ? Clause.value.map((clause) => {
+          const [, , items] = titleMap[clause]?.split("丨") || ["", "", "未知"];
+          return { 项目: clause, 信息: items };
+        })
+      : [{ 项目: "无", 信息: "未选择产品类别" }]),
+    { 项目: "", 信息: "" }, // 空行分隔
+  ];
+
+  // 测试样品模块
+  const testSamples = [
+    { 项目: "测试样品需求", 信息: "数量" },
+    { 项目: "正常样机（含出厂配件）", 信息: "2 台" },
+    { 项目: "RTT 功能样机", 信息: checkedRTT.value ? "3 台" : "0 台" },
+    { 项目: "HAC 功能样机", 信息: checkedHAC.value ? "1 台" : "0 台" },
+    { 项目: "总计样品数", 信息: `${quantity.value} 台` },
+    { 项目: "", 信息: "" }, // 空行分隔
+  ];
+
+  // 所需资料模块
+  const requiredDocs = [
+    { 项目: "启动测试所需资料", 信息: "备注" },
+    {
+      项目: "EU 2019/882 测试产品技术资料清单",
+      信息: "https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true",
+    },
+    { 项目: "用户手册（User Manual）", 信息: "需提供完整版本" },
+    {
+      项目: "型号差异声明（如有多型号）",
+      信息: "https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true",
+    },
+    { 项目: "其他补充资料", 信息: "根据测试类别可能需要额外文件" },
+  ];
+
+  // 合并所有模块数据，仅包含一次大标题行
+  const exportData = [
+    ...titleRow, // 仅一次大标题行
+    ...baseInfo,
+    ...testCycle,
+    ...testClauses,
+    ...testSamples,
+    ...requiredDocs,
+  ];
+
+  // 生成文件名
+  const fileName = `EAA_${value.value || "Unselected"}_${
+    new Date().toISOString().split("T")[0]
+  }`;
+
+  // 导出配置
+  const exportConfig = {
+    columnWidths: [
+      { wch: 60 }, // 项目列宽度
+      { wch: 60 }, // 信息列宽度
+    ],
+    cellStyles: [
+      // 大标题行样式（仅首行）
+      {
+        condition: (value, row, col) => row === 0,
+        style: {
+          font: { bold: true, color: { rgb: "FFFFFF" }, sz: 14 },
+          fill: {
+            patternType: "solid",
+            fgColor: { rgb: "064650" },
+            bgColor: { indexed: 64 },
+          },
+          alignment: { horizontal: "center", vertical: "center" },
+          border: {
+            top: { style: "thin" },
+            bottom: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" },
+          },
+        },
+      },
+      // 表头样式（第二行）
+      {
+        condition: (value, row, col) => row === 1,
+        style: {
+          font: { bold: true, color: { rgb: "FFFFFF" } },
+          fill: {
+            patternType: "solid",
+            fgColor: { rgb: "7D2222" },
+            bgColor: { indexed: 64 },
+          },
+          alignment: { horizontal: "center" },
+        },
+      },
+      // 模块标题行样式
+      {
+        condition: (value, row, col) =>
+          [
+            2,
+            2 + baseInfo.length,
+            2 + baseInfo.length + testCycle.length,
+            2 + baseInfo.length + testCycle.length + testClauses.length,
+          ].includes(row) && col === 0,
+        style: {
+          font: { bold: true, color: { rgb: "FFFFFF" } },
+          fill: {
+            patternType: "solid",
+            fgColor: { rgb: "7D2222" },
+            bgColor: { indexed: 64 },
+          },
+          alignment: { horizontal: "left" },
+        },
+      },
+      // 测试条款子标题样式
+      {
+        condition: (value, row, col) =>
+          row === 2 + baseInfo.length + testCycle.length && col === 1,
+        style: {
+          font: { bold: true, color: { rgb: "FFFFFF" } },
+          fill: {
+            patternType: "solid",
+            fgColor: { rgb: "7D2222" },
+            bgColor: { indexed: 64 },
+          },
+          alignment: { horizontal: "center" },
+        },
+      },
+      // 链接样式
+      {
+        condition: (value, row, col) =>
+          typeof value === "string" && value.startsWith("http"),
+        style: { font: { underline: true, color: { rgb: "0000FF" } } },
+      },
+      // 合计行样式
+      {
+        condition: (value, row, col) =>
+          row ===
+            2 + baseInfo.length + testCycle.length + testClauses.length + 4 &&
+          col === 0,
+        style: { font: { bold: true } },
+      },
+    ],
+    // 合并大标题行两列（确保只显示一次）
+    merges: [{ s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }],
+  };
+
+  // 执行导出（表头映射修正为正确的"项目"和"信息"，避免重复标题）
   exportJsonToExcel(
     exportData,
-    `EAA_${value.value}_${new Date().toLocaleDateString().replace(/\//g, "-")}`,
-    { 项目: "项目", 信息: "信息" },
-    { columnWidths: [{ wch: 40 }, { wch: 30 }] }
+    fileName,
+    { 项目: "SGS EAA 项目报价及认证注意事宜", 信息: "信息" }, // 表头正确映射，不重复大标题
+    exportConfig
   );
 };
 </script>

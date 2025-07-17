@@ -4,7 +4,7 @@
     <div class="lab-info-wrapper" v-show="isVisible">
       <div class="lab-info-card">
         <!-- 关闭按钮 -->
-        <div class="close-btn" @click="closeCard">×</div>
+        <!-- <div class="close-btn" @click="closeCard">×</div>-->
 
         <div class="info-header">
           <div class="text-group">
