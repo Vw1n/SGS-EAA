@@ -1,8 +1,6 @@
-<!-- Logout.vue -->
 <template>
   <button class="logout-btn" @click="handleLogout">
-    <i class="icon-logout"></i>
-    <span class="btn-text">退出登录</span>
+    <span class="btn-text">退出</span>
   </button>
 </template>
 
@@ -23,64 +21,44 @@ const handleLogout = () => {
 
 <style scoped>
 .logout-btn {
-  /* 固定在右下角 */
   position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 100; /* 确保在最上层 */
+  right: 1px;
+  bottom: 16px;
+  z-index: 100;
   
-  /* 原有样式保持不变 */
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  
+  padding: 8px 16px; /* 调整内边距使按钮更平衡 */
   background: linear-gradient(135deg, #f56c6c 0%, #f87171 100%);
   border: none;
-  border-radius: 50px; /* 圆角增大，使按钮更圆润 */
+  border-radius: 24px; /* 适当减小圆角 */
   color: #fff;
-  font-size: 15px;
+  font-size: 14px; /* 略微增大字体使按钮更清晰 */
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 6px 16px rgba(245, 108, 108, 0.3); /* 阴影增强，突出按钮 */
+  box-shadow: 0 4px 12px rgba(245, 108, 108, 0.2);
 }
 
-/* 图标样式 */
-.icon-logout {
-  width: 18px;
-  height: 18px;
-  transition: transform 0.3s ease;
-}
-
-/* 悬停效果 */
 .logout-btn:hover {
-  transform: translateY(-4px); /* 上浮距离增大 */
+  transform: translateY(-2px);
   background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
-  box-shadow: 0 10px 24px rgba(245, 108, 108, 0.4); /* 阴影进一步增强 */
+  box-shadow: 0 6px 16px rgba(245, 108, 108, 0.3);
 }
 
-.logout-btn:hover .icon-logout {
-  transform: translateX(-3px);
-}
-
-/* 点击效果 */
 .logout-btn:active {
-  transform: translateY(-2px); /* 点击后不完全恢复原位，保持轻微上浮 */
-  box-shadow: 0 4px 12px rgba(245, 108, 108, 0.3);
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(245, 108, 108, 0.2);
 }
 
-/* 响应式调整 */
 @media (max-width: 576px) {
   .logout-btn {
-    right: 16px;
-    bottom: 16px;
-    padding: 10px 16px;
-    font-size: 14px;
-  }
-  
-  .icon-logout {
-    width: 16px;
-    height: 16px;
+    right: 1px;
+    bottom: 12px;
+    padding: 7px 14px;
+    font-size: 13px;
   }
 }
 </style>
