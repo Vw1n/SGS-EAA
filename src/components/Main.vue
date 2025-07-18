@@ -736,45 +736,48 @@ const handleExport = () => {
             </div>
           </div>
         </div>
-
-        <!-- 费用展示区 -->
-        <div class="cost-section-wrapper" v-if="authStore.auth == 'inner'">
-          <div class="section-header">
-            <h4 class="section-title">4.Quotation(CNY, Not includingVAT)</h4>
-            <button class="toggle-btn" @click="showQuotation = !showQuotation">
-              {{ showQuotation ? "隐藏" : "显示" }}
-            </button>
-          </div>
-          <div v-if="showQuotation" class="cost-section animate-fade-in">
-            <div class="cost-display">¥{{ cost.toLocaleString() }} (CNY)</div>
-          </div>
-        </div>
-
         <!-- 文件清单区 -->
         <div class="documents-section-wrapper" v-if="value">
           <div class="section-header">
-            <h4 class="section-title">5.启动测试所需资料</h4>
+            <h4 class="section-title">4.启动测试所需资料</h4>
             <button class="toggle-btn" @click="showPaper = !showPaper">
               {{ showPaper ? "隐藏" : "显示" }}
             </button>
           </div>
           <div v-if="showPaper" class="documents-section animate-fade-in">
             <div class="document-item">
-              <div>EU 2019/882 测试产品技术资料清单</div>
+              <div>a) EU 2019/882 测试产品技术资料清单</div>
               <a
+                target="_blank"
                 href="https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true"
               >
-                点击查看资料清单
+                点击下载最新版本
               </a>
             </div>
             <div class="document-item">
-              <div>型号差异声明（如有多型号）</div>
+              <div>b) 型号差异声明（如有多型号）</div>
               <a
+                target="_blank"
                 href="https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true"
               >
-                点击查看声明模板
+                点击下载最新版本
               </a>
             </div>
+            <div class="document-item">
+              <div>c) 用户手册（User Manual）</div>
+            </div>
+          </div>
+        </div>
+        <!-- 费用展示区 -->
+        <div class="cost-section-wrapper" v-if="authStore.auth == 'inner'">
+          <div class="section-header">
+            <h4 class="section-title">5.Quotation(CNY, Not includingVAT)</h4>
+            <button class="toggle-btn" @click="showQuotation = !showQuotation">
+              {{ showQuotation ? "隐藏" : "显示" }}
+            </button>
+          </div>
+          <div v-if="showQuotation" class="cost-section animate-fade-in">
+            <div class="cost-display">¥{{ cost.toLocaleString() }} (CNY)</div>
           </div>
         </div>
       </div>
