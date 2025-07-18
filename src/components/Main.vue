@@ -13,6 +13,7 @@ const showClause = ref(true);
 const showLeadTime = ref(true);
 const showTestSample = ref(true);
 const showQuotation = ref(true);
+const showPaper = ref(false);
 
 // 常见移动端高亮映射
 const osHightMap = {
@@ -748,6 +749,34 @@ const handleExport = () => {
             <div class="cost-display">¥{{ cost.toLocaleString() }} (CNY)</div>
           </div>
         </div>
+
+        <!-- 文件清单区 -->
+        <div class="documents-section-wrapper" v-if="value">
+          <div class="section-header">
+            <h4 class="section-title">5.启动测试所需资料</h4>
+            <button class="toggle-btn" @click="showPaper = !showPaper">
+              {{ showPaper ? "隐藏" : "显示" }}
+            </button>
+          </div>
+          <div v-if="showPaper" class="documents-section animate-fade-in">
+            <div class="document-item">
+              <div>EU 2019/882 测试产品技术资料清单</div>
+              <a
+                href="https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true"
+              >
+                点击查看资料清单
+              </a>
+            </div>
+            <div class="document-item">
+              <div>型号差异声明（如有多型号）</div>
+              <a
+                href="https://sgs.sharepoint.com/sites/ext-cn-crs-cpeec-emclab/SGSEAA/EMC%20EAA/Forms/AllItems.aspx?id=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FEAA%20Shared%20Document%20%28Internal%20only%29%2FFor%20Client&newTargetListUrl=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA&viewpath=%2Fsites%2Fext%2Dcn%2Dcrs%2Dcpeec%2Demclab%2FSGSEAA%2FEMC%20EAA%2FForms%2FAllItems%2Easpx&startedResponseCatch=true"
+              >
+                点击查看声明模板
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="export-section">
         <ExportButton :isDisabled="!value" @export="handleExport" />
@@ -1292,6 +1321,91 @@ const handleExport = () => {
   .cycle-note {
     font-size: 10px; /* 超小屏幕进一步缩小 */
     margin: 0 2px;
+  }
+}
+/* 文件清单区域样式 - 与其他区块保持视觉一致性 */
+.documents-section-wrapper {
+  margin: 5px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(237, 109, 45, 0.2);
+}
+
+/* 资料内容区域样式 */
+.documents-section {
+  padding: 12px 15px;
+  background: #fff;
+}
+
+/* 单个资料项样式 */
+.document-item {
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(237, 109, 45, 0.1);
+}
+
+.document-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+/* 资料标题文本样式 */
+.document-item > div:first-child {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 6px;
+  font-weight: 500;
+  padding-left: 4px;
+}
+
+/* 链接样式优化 - 增强可点击性 */
+.document-item a {
+  display: inline-block;
+  color: #0066cc; /* 标准链接蓝色 */
+  font-size: 12px;
+  text-decoration: underline;
+  line-height: 1.5;
+  max-width: 100%;
+  word-break: break-all; /* 长链接自动换行 */
+  padding-left: 4px;
+  transition: color 0.2s ease;
+}
+
+.document-item a:hover {
+  color: #ed6d2d; /*  hover时与主题色呼应 */
+  text-decoration: none;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .documents-section {
+    padding: 10px 12px;
+  }
+
+  .document-item {
+    margin-bottom: 10px;
+    padding: 6px 0;
+  }
+
+  .document-item > div:first-child {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .document-item a {
+    font-size: 11px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 480px) {
+  .documents-section {
+    padding: 8px 10px;
+  }
+
+  .document-item {
+    margin-bottom: 8px;
   }
 }
 </style>
