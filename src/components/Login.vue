@@ -18,8 +18,6 @@ function validateString(str) {
   return regex.test(str);
 }
 const authData = [
-  { username: "ryan.yang", password: "SGSEAA" },
-  { username: "123", password: "123" },
   { username: "Cynthia.Kong", password: "18243399875" },
   { username: "tom.huang", password: "15013567729" },
   { username: "apple-ww.wang", password: "15921745934" },
@@ -30,6 +28,11 @@ const authData = [
   { username: "ivan.cui", password: "13584802881" },
   { username: "Bella-jj.Zhang", password: "13405189037" },
   { username: "mike.gong", password: "18620373810" },
+  { username: "gavin-h.chen", password: "13823653476" },
+  { username: "Winnie-JH.Wen", password: "18814118621" },
+  { username: "Thomas.Tao", password: "13083201002" },
+  { username: "Vicki.Chen", password: "18800208560" },
+  { username: "fiona.zheng", password: "18017840748" },
 ];
 const judgeLogin = (name, word) => {
   for (let i = 0; i < authData.length; i++) {
