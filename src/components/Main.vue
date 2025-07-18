@@ -185,7 +185,8 @@ const clauseMap = {
     "Clause 11",
     "Clause 12",
   ],
-  Website: ["Clause 9"],
+  "Website(s)": ["Clause 9"],
+  "Mobile App(s)": ["Clause 11"],
 };
 const Clause = computed(() => clauseMap[value.value] || []);
 
@@ -503,15 +504,20 @@ const handleExport = () => {
             value == 'Smart Watch' ||
             value == 'Tablet/Pad'
           "
+          class="apps-input-container"
         >
           <h4 class="section-title">请输入主体Apps数量</h4>
-          <el-input
-            v-model="appNum"
-            style="width: 400px"
-            placeholder="输入Apps数量"
-          />
+          <div class="apps-input-wrapper">
+            <el-input v-model="appNum" placeholder="输入Apps数量" />
+          </div>
         </div>
-        <div v-else-if="value != 'Website(s)'">
+        <div
+          v-if="
+            value != 'Website(s)' ||
+            value != 'Smart Phone' ||
+            value != 'Tablet/Pad'
+          "
+        >
           <!-- 移动端支持复选框 -->
           <div class="mobile-support-option" v-if="value">
             <div v-if="osHight" class="os-hint red-highlight">
@@ -655,13 +661,13 @@ const handleExport = () => {
         <!-- 周期区域 -->
         <div v-if="value" class="cycle-section-wrapper">
           <div class="section-header">
-            <h4 class="section-title">
-              2.Lead Time(Working Days)<span v-if="value == 'Website(s)'">
-                Every hundred web pages</span
-              ><span v-if="value == 'Mobile App(s)'">
-                Every ten App(s)</span
-              >
-            </h4>
+            <h4 class="section-title">2.Lead Time(Working Days)</h4>
+            <div v-if="value == 'Website(s)'" class="cycle-note">
+              Every hundred web pages
+            </div>
+            <div v-if="value == 'Mobile App(s)'" class="cycle-note">
+              Every ten App(s)
+            </div>
             <button class="toggle-btn" @click="showLeadTime = !showLeadTime">
               {{ showLeadTime ? "隐藏" : "显示" }}
             </button>
@@ -1200,6 +1206,92 @@ const handleExport = () => {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+/* Apps数量输入区容器样式 */
+.apps-input-container {
+  margin: 10px 0;
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(237, 109, 45, 0.2);
+  background: #fff;
+}
+
+/* 确保标题与其他区块标题样式统一并添加底部间距 */
+.apps-input-container .section-title {
+  margin-bottom: 12px;
+  display: block;
+  padding: 4px 12px;
+}
+
+/* 优化输入框样式，移除固定宽度，使用响应式设计 */
+.apps-input-container .el-input {
+  width: 100% !important;
+  max-width: 400px; /* 保留最大宽度限制 */
+  margin: 0;
+  padding: 0;
+}
+
+/* 输入框容器样式，确保与标题左对齐 */
+.apps-input-wrapper {
+  padding-left: 12px; /* 与标题内边距匹配，确保左对齐 */
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .apps-input-container {
+    padding: 8px 10px;
+  }
+
+  .apps-input-container .section-title {
+    padding: 4px 8px;
+    margin-bottom: 10px;
+  }
+
+  .apps-input-wrapper {
+    padding-left: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .apps-input-container {
+    margin: 8px 0;
+    padding: 6px 8px;
+  }
+
+  .apps-input-container .section-title {
+    font-size: 13px;
+    padding: 3px 6px;
+    margin-bottom: 8px;
+  }
+
+  .apps-input-wrapper {
+    padding-left: 6px;
+  }
+}
+/* 周期说明文本样式 */
+.cycle-note {
+  color: #ed6d2d; /* 与标题同色系保持协调 */
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap; /* 防止文本换行 */
+  flex-shrink: 0; /* 避免在flex布局中被压缩 */
+  margin: 0 5px; /* 与左右元素保持间距 */
+  padding: 2px 0; /* 垂直方向居中对齐 */
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .cycle-note {
+    font-size: 11px; /* 小屏幕缩小字体 */
+    margin: 0 3px; /* 减小间距 */
+  }
+}
+
+@media (max-width: 480px) {
+  .cycle-note {
+    font-size: 10px; /* 超小屏幕进一步缩小 */
+    margin: 0 2px;
   }
 }
 </style>

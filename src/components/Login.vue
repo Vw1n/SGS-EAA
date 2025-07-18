@@ -17,6 +17,28 @@ function validateString(str) {
   const regex = /^1\d{10}$/;
   return regex.test(str);
 }
+const authData = [
+  { username: "ryan.yang@sgs.com", password: "SGSEAA" },
+  { username: "123", password: "123" },
+  { username: "Cynthia.Kong@sgs.com", password: "18243399875" },
+  { username: "tom.huang@sgs.com", password: "15013567729" },
+  { username: "apple-ww.wang@sgs.com", password: "15921745934" },
+  { username: "Maggie-mt.Guo@sgs.com", password: "13045680426" },
+  { username: "antti.zhu@sgs.com", password: "13914986263" },
+  { username: "jeff-jf.zhang@sgs.com", password: "13772189423" },
+  { username: "Tina.Yuan@sgs.com", password: "13913917146" },
+  { username: "ivan.cui@sgs.com", password: "13584802881" },
+  { username: "Bella-jj.Zhang@sgs.com", password: "13405189037" },
+  { username: "mike.gong@sgs.com", password: "18620373810" },
+];
+const judgeLogin = (name, word) => {
+  for (let i = 0; i < authData.length; i++) {
+    if (authData[i].username == name && authData[i].password == word) {
+      return true;
+    }
+  }
+  return false;
+};
 const handleLogin = async () => {
   errorMessage.value = "";
 
@@ -34,10 +56,7 @@ const handleLogin = async () => {
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 800));
-    if (
-      (username.value === "ryan.yang@sgs.com" && password.value === "SGSEAA") ||
-      (username.value === "123" && password.value === "123")
-    ) {
+    if (judgeLogin(username.value, password.value)) {
       localStorage.setItem("token", "true");
       authStore.changeAuth("inner");
       loginCard.value.classList.add("success-animation");
