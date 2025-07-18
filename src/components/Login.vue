@@ -128,14 +128,16 @@ onMounted(() => {
               <span class="input-icon">
                 <i class="fa fa-user"></i>
               </span>
-              <input
+              <el-input
                 v-model="username"
                 type="text"
                 placeholder="请输入 SGS 邮箱"
                 class="form-input"
                 autocomplete="off"
                 required
-              />
+              >
+                <template #append>@sgs.com</template>
+              </el-input>
             </div>
           </div>
 
