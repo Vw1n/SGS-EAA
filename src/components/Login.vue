@@ -18,18 +18,18 @@ function validateString(str) {
   return regex.test(str);
 }
 const authData = [
-  { username: "ryan.yang@sgs.com", password: "SGSEAA" },
+  { username: "ryan.yang", password: "SGSEAA" },
   { username: "123", password: "123" },
-  { username: "Cynthia.Kong@sgs.com", password: "18243399875" },
-  { username: "tom.huang@sgs.com", password: "15013567729" },
-  { username: "apple-ww.wang@sgs.com", password: "15921745934" },
-  { username: "Maggie-mt.Guo@sgs.com", password: "13045680426" },
-  { username: "antti.zhu@sgs.com", password: "13914986263" },
-  { username: "jeff-jf.zhang@sgs.com", password: "13772189423" },
-  { username: "Tina.Yuan@sgs.com", password: "13913917146" },
-  { username: "ivan.cui@sgs.com", password: "13584802881" },
-  { username: "Bella-jj.Zhang@sgs.com", password: "13405189037" },
-  { username: "mike.gong@sgs.com", password: "18620373810" },
+  { username: "Cynthia.Kong", password: "18243399875" },
+  { username: "tom.huang", password: "15013567729" },
+  { username: "apple-ww.wang", password: "15921745934" },
+  { username: "Maggie-mt.Guo", password: "13045680426" },
+  { username: "antti.zhu", password: "13914986263" },
+  { username: "jeff-jf.zhang", password: "13772189423" },
+  { username: "Tina.Yuan", password: "13913917146" },
+  { username: "ivan.cui", password: "13584802881" },
+  { username: "Bella-jj.Zhang", password: "13405189037" },
+  { username: "mike.gong", password: "18620373810" },
 ];
 const judgeLogin = (name, word) => {
   for (let i = 0; i < authData.length; i++) {
@@ -480,6 +480,193 @@ body {
 
   .input-group {
     padding: 0 10px;
+  }
+}
+/* 登录表单容器 */
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 4vw, 20px); /* 统一表单元素间距 */
+  margin-top: 8px;
+}
+
+/* 表单组容器 - 增强间距控制 */
+.form-group {
+  width: 100%;
+  position: relative;
+}
+
+/* 输入框容器 - 优化布局与状态反馈 */
+.input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dcdfe6;
+  border-radius: 10px;
+  padding: 0 14px;
+  height: clamp(42px, 10vw, 48px);
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+/* 输入框容器交互状态 */
+.input-group:hover {
+  border-color: #b3d8ff; /* hover时更柔和的蓝色 */
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1); /* 微妙的光晕效果 */
+}
+
+.input-group:focus-within {
+  border-color: #409eff; /* 子元素获得焦点时高亮边框 */
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2); /* 焦点光晕 */
+  outline: none; /* 移除默认outline */
+}
+
+/* 错误状态强化 */
+.input-group.is-error {
+  border-color: #f56c6c;
+  box-shadow: 0 0 0 2px rgba(245, 108, 108, 0.15); /* 错误状态光晕 */
+}
+
+.input-group.is-error:hover {
+  border-color: #f78989; /* 错误状态hover强化 */
+}
+
+/* 输入框图标优化 */
+.input-icon {
+  width: 22px;
+  color: #909399;
+  margin-right: 10px;
+  flex-shrink: 0; /* 防止图标被压缩 */
+  transition: color 0.3s ease;
+}
+
+.input-group:focus-within .input-icon {
+  color: #409eff; /* 焦点时图标变色 */
+}
+
+.input-group.is-error .input-icon {
+  color: #f56c6c; /* 错误时图标变色 */
+}
+
+/* 统一输入框样式（兼容el-input和原生input） */
+.form-input,
+.el-input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: clamp(14px, 3vw, 15px);
+  color: #303133;
+  background: transparent;
+  padding: 0; /* 清除默认内边距 */
+}
+
+/* 适配el-input内部输入框 */
+.el-input__inner {
+  height: 100% !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: clamp(14px, 3vw, 15px) !important;
+}
+
+/* el-input后缀文本样式 */
+.el-input__append {
+  background: transparent !important;
+  border-left: none !important;
+  padding: 0 0 0 8px !important;
+  color: #909399 !important;
+  font-size: clamp(14px, 3vw, 15px) !important;
+}
+
+/* 输入框占位符样式统一 */
+.form-input::placeholder,
+.el-input__inner::placeholder {
+  color: #c0c4cc;
+  transition: color 0.3s ease;
+}
+
+.input-group:focus-within .form-input::placeholder,
+.input-group:focus-within .el-input__inner::placeholder {
+  color: #dcdfe6; /* 焦点时占位符变淡 */
+}
+
+/* 登录按钮优化 */
+.login-btn {
+  width: 100%;
+  height: clamp(44px, 10vw, 48px);
+  background: linear-gradient(135deg, #409eff, #66b1ff);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: clamp(14px, 3vw, 15px);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(64, 158, 255, 0.2);
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 按钮悬停效果增强 */
+.login-btn:hover:not(.btn-loading) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.3);
+  background: linear-gradient(135deg, #3689e6, #5ca8f8); /* 稍深一点的渐变 */
+}
+
+/* 按钮点击效果 */
+.login-btn:active:not(.btn-loading) {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(64, 158, 255, 0.2);
+  background: linear-gradient(135deg, #3079d1, #549be6); /* 点击时更深 */
+}
+
+/* 禁用状态优化 */
+.login-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 5px 15px rgba(64, 158, 255, 0.15);
+  background: linear-gradient(135deg, #a0cfff, #c6e2ff);
+}
+
+/* 加载状态图标优化 */
+.login-btn .fa-spinner {
+  margin-right: 6px;
+  font-size: 16px;
+  animation: spin 1s linear infinite;
+}
+
+/* 加载动画优化 */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 小屏幕适配调整 */
+@media (max-width: 360px) {
+  .input-group {
+    padding: 0 10px;
+  }
+
+  .input-icon {
+    margin-right: 8px;
+    width: 20px;
+  }
+
+  .login-btn {
+    height: 44px;
+    font-size: 14px;
   }
 }
 </style>
